@@ -6,7 +6,7 @@ const secretString = process.env.FB_SECRET;
 const FacebookStrategy = new passport_facebook_1.Strategy({
     clientID: idString,
     clientSecret: secretString,
-    callbackURL: "http://localhost:7000/test"
+    callbackURL: "http://localhost:7000/auth/log-in-facebook"
 }, (accessToken, refreshToken, profile, done) => {
     //if cant find user in db, create one!
     return done(null, profile);

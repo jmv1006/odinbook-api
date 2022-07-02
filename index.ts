@@ -1,10 +1,12 @@
 import  {Request, Response} from 'express';
+import express from "express";
 import passport from 'passport';
-import 'dotenv/config'
+import 'dotenv/config';
+import './config/db/db';
 import FacebookStrategy from './config/passport/facebook';
 import LocalStrategy from './config/passport/local';
-import express from "express";
-import testRoute from './routes/test';
+import authRoute from './routes/auth';
+import postsRoute from './routes/posts';
 
 const app = express();
 
@@ -15,7 +17,8 @@ passport.use(FacebookStrategy);
 passport.use(LocalStrategy);
 passport.initialize();
 
-app.use('/test', testRoute);
+app.use('/auth', authRoute);
+app.use('/posts', postsRoute);
 
 app.get('/', (req: Request, res: Response) => {
     res.json("Hello From API!")
