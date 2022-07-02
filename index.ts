@@ -7,6 +7,7 @@ import FacebookStrategy from './config/passport/facebook';
 import LocalStrategy from './config/passport/local';
 import authRoute from './routes/auth';
 import postsRoute from './routes/posts';
+import likesRoute from './routes/likes'
 
 const app = express();
 
@@ -19,6 +20,7 @@ passport.initialize();
 
 app.use('/auth', authRoute);
 app.use('/posts', postsRoute);
+app.use('/likes', likesRoute);
 
 app.get('/', (req: Request, res: Response) => {
     res.json("Hello From API!")

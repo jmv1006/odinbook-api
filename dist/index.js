@@ -11,6 +11,7 @@ const facebook_1 = __importDefault(require("./config/passport/facebook"));
 const local_1 = __importDefault(require("./config/passport/local"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const posts_1 = __importDefault(require("./routes/posts"));
+const likes_1 = __importDefault(require("./routes/likes"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -19,6 +20,7 @@ passport_1.default.use(local_1.default);
 passport_1.default.initialize();
 app.use('/auth', auth_1.default);
 app.use('/posts', posts_1.default);
+app.use('/likes', likes_1.default);
 app.get('/', (req, res) => {
     res.json("Hello From API!");
 });
