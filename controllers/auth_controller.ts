@@ -4,6 +4,7 @@ import Joi from 'joi';
 import { v4 } from 'uuid';
 import { hash } from 'bcryptjs';
 import passport from 'passport';
+import { sign } from 'jsonwebtoken';
 
 export const log_in = (req: Request, res: Response) => {
     passport.authenticate('local', {session: false}, (err, user, info) => {
@@ -14,14 +15,21 @@ export const log_in = (req: Request, res: Response) => {
         if(!user) {
             return res.status(400).json("Error Signing In")
         }
-
-        const userInfo = {
+        
+        const tokenUser = {
             Id: user.Id,
             DisplayName: user.DisplayName,
             Email: user.Email,
         }
         
-        res.status(200).json(userInfo)
+        const tokenSecret: any = process.env.TOKEN_SECRET;
+        
+        const token = sign({user: tokenUser}, tokenSecret, {expiresIn: '15m'})
+    
+        return res.status(200).cookie('token', token, {httpOnly: true, sameSite: 'strict', secure: true}).json({
+            message: 'Auth Passed',
+            user: tokenUser,
+        });
 
     })(req, res)
 }

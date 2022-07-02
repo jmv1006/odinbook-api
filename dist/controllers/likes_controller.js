@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.remove_post_like = exports.create_post_like = void 0;
 const db_1 = __importDefault(require("../config/db/db"));
 const uuid_1 = require("uuid");
-//Create Like
 const create_post_like = (req, res) => {
     db_1.default.query(`SELECT * FROM Post_Likes WHERE User="${req.params.UserId}" AND Post="${req.params.PostId}"`, (err, result) => {
         if (err)

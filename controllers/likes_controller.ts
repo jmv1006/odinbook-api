@@ -1,7 +1,7 @@
 import con from "../config/db/db";
 import { Request, Response } from "express";
 import { v4 } from "uuid";
-//Create Like
+
 export const create_post_like = (req: Request, res: Response) => {
     con.query(`SELECT * FROM Post_Likes WHERE User="${req.params.UserId}" AND Post="${req.params.PostId}"`, (err, result) => {
         if (err) return res.status(500).json({message: "Server Error"})

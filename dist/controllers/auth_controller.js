@@ -9,6 +9,7 @@ const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const bcryptjs_1 = require("bcryptjs");
 const passport_1 = __importDefault(require("passport"));
+const jsonwebtoken_1 = require("jsonwebtoken");
 const log_in = (req, res) => {
     passport_1.default.authenticate('local', { session: false }, (err, user, info) => {
         if (err) {
@@ -17,12 +18,17 @@ const log_in = (req, res) => {
         if (!user) {
             return res.status(400).json("Error Signing In");
         }
-        const userInfo = {
+        const tokenUser = {
             Id: user.Id,
             DisplayName: user.DisplayName,
             Email: user.Email,
         };
-        res.status(200).json(userInfo);
+        const tokenSecret = process.env.TOKEN_SECRET;
+        const token = (0, jsonwebtoken_1.sign)({ user: tokenUser }, tokenSecret, { expiresIn: '15m' });
+        return res.status(200).cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: true }).json({
+            message: 'Auth Passed',
+            user: tokenUser,
+        });
     })(req, res);
 };
 exports.log_in = log_in;
