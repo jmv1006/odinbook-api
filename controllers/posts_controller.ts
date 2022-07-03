@@ -1,4 +1,3 @@
-import con from "../config/db/db";
 import { Request, Response } from "express";
 import Joi from "joi";
 import { v4 } from "uuid";
@@ -8,7 +7,7 @@ const prisma = new PrismaClient();
 
 export const get_all_posts = async (req: Request, res: Response) => {
     const posts = await prisma.posts.findMany();
-    if(posts === null) return res.status(400).json({message: "No Posts!"})
+    if(!posts) return res.status(400).json({message: "No Posts!"})
     return res.status(200).json(posts)
 };
 
@@ -23,17 +22,13 @@ export const create_post = async (req: Request, res: Response) => {
 
     if(error) return res.status(400).json("Error Creating Post")
 
-    const user =  await prisma.users.findFirst({where:{Id: req.params.UserId}})
-
-    if(!user) return res.status(400).json({message: "User Does Not Exist"})
-
     await prisma.posts.create({
         data: {
             Id: v4(),
             UserId: req.params.UserId,
             Text: req.body.Text
         }
-    })
+    });
 
     return res.status(200).json({message: "Successfully Created Post"})
 };

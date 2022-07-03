@@ -36,5 +36,5 @@ model Users {
   Id          String  @id @db.VarChar(255)
   DisplayName String? @db.VarChar(255)
   Email       String? @db.VarChar(255)
-  Password    String? @db.VarChar(255)
+  Password    String  @db.VarChar(255)
 }

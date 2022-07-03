@@ -19,7 +19,7 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const get_all_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield prisma.posts.findMany();
-    if (posts === null)
+    if (!posts)
         return res.status(400).json({ message: "No Posts!" });
     return res.status(200).json(posts);
 });
@@ -33,9 +33,6 @@ const create_post = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { error } = schema.validate(req.body, { abortEarly: false });
     if (error)
         return res.status(400).json("Error Creating Post");
-    const user = yield prisma.users.findFirst({ where: { Id: req.params.UserId } });
-    if (!user)
-        return res.status(400).json({ message: "User Does Not Exist" });
     yield prisma.posts.create({
         data: {
             Id: (0, uuid_1.v4)(),

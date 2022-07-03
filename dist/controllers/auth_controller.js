@@ -1,17 +1,27 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.log_in_facebook = exports.sign_up = exports.log_in = void 0;
-const db_1 = __importDefault(require("../config/db/db"));
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const bcryptjs_1 = require("bcryptjs");
 const passport_1 = __importDefault(require("passport"));
 const jsonwebtoken_1 = require("jsonwebtoken");
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
 const log_in = (req, res) => {
-    passport_1.default.authenticate('local', { session: false }, (err, user, info) => {
+    passport_1.default.authenticate('local', { session: false }, (err, user) => {
         if (err) {
             return res.status(400).json('Error Authenticating User');
         }
@@ -32,7 +42,7 @@ const log_in = (req, res) => {
     })(req, res);
 };
 exports.log_in = log_in;
-const sign_up = (req, res) => {
+const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const schema = joi_1.default.object({
         Email: joi_1.default.string()
             .email()
@@ -56,22 +66,24 @@ const sign_up = (req, res) => {
         res.status(400).json("Error Signing Up");
         return;
     }
-    ;
-    db_1.default.query(`SELECT * FROM Users WHERE Email="${req.body.Email}"`, (err, result) => {
-        if (result.length > 0)
-            return res.status(400).json({ message: "User Already Exists" });
-        (0, bcryptjs_1.hash)(req.body.Password, 10, (err, hashedPassword) => {
-            db_1.default.query(`INSERT INTO Users (Id, DisplayName, Email, Password) VALUES ("${(0, uuid_1.v4)()}", "${req.body.DisplayName}", "${req.body.Email}", "${hashedPassword}")`, (err, result) => {
-                if (err)
-                    return res.status(500).json({ message: "Server Error" });
-                return res.status(200).json({ message: "Successfully Created User" });
-            });
+    const existingUser = yield prisma.users.findFirst({ where: { Email: req.body.Email } });
+    if (existingUser)
+        return res.status(400).json({ message: "User Already Exists" });
+    (0, bcryptjs_1.hash)(req.body.Password, 10, (err, hashedPassword) => __awaiter(void 0, void 0, void 0, function* () {
+        yield prisma.users.create({
+            data: {
+                Id: (0, uuid_1.v4)(),
+                DisplayName: req.body.DisplayName,
+                Email: req.body.Email,
+                Password: hashedPassword
+            }
         });
-    });
-};
+        return res.status(200).json({ message: "Successfully Created User" });
+    }));
+});
 exports.sign_up = sign_up;
 const log_in_facebook = (req, res) => {
-    passport_1.default.authenticate('facebook', { session: false }, (err, user, info) => {
+    passport_1.default.authenticate('facebook', { session: false }, (err, user) => {
         if (err) {
             return res.status(400).json('Error Authenticating User');
         }

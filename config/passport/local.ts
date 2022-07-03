@@ -1,26 +1,21 @@
 import { Strategy } from "passport-local";
 import { compare } from "bcryptjs";
-import con from "../db/db";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
-const LocalStrategy = new Strategy({usernameField: "Email", passwordField: "Password"}, (Email, Password, done) => {
-    con.query(`SELECT * FROM Users WHERE Email="${Email}"`, (err, result) => {
-        if (err) {
-          return done(err)
-        }
+const LocalStrategy = new Strategy({usernameField: "Email", passwordField: "Password"}, async (Email, Password, done) => {
+    const user = await prisma.users.findFirst({where: {Email: Email}})
 
-        if (result.length == 0) {
-            return done(null, false, { message: "Incorrect Username" });
-        }
+    if(!user) return done(null, false, { message: "Incorrect Username" });
 
-        if(result.length > 0) {
-            compare(Password, result[0].Password, (err, res) => {
-                if(res) {
-                    return done(null, result[0])
-                }
-                return done(null, false, { message: "Incorrect Password" })
-            })
-        }
-    });
+    if(user) {
+        compare(Password, user.Password, (err, res) => {
+            if(res) {
+                return done(null, user)
+            }
+            return done(null, false, { message: "Incorrect Password" })
+        })
+    }
 });
 
 export default LocalStrategy;

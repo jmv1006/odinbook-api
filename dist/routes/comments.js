@@ -6,5 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const comments_controller_1 = require("../controllers/comments_controller");
-router.post('/:PostId/:UserId', comments_controller_1.create_comment);
+const check_user_exists_1 = __importDefault(require("../middleware/check_user_exists"));
+router.post('/:PostId/:UserId', check_user_exists_1.default, comments_controller_1.create_comment);
 exports.default = router;

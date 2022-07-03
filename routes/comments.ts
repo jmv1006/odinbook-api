@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
 import { create_comment } from '../controllers/comments_controller'
+import checkUserExists from '../middleware/check_user_exists';
 
-router.post('/:PostId/:UserId', create_comment)
+router.post('/:PostId/:UserId', checkUserExists, create_comment)
 
 export default router;

@@ -1,9 +1,11 @@
-import con from "../config/db/db";
 import { Request, Response } from "express";
 import { v4 } from "uuid";
 import Joi from "joi";
+import { PrismaClient } from "@prisma/client";
 
-export const create_comment = (req: Request, res: Response) => {
+const prisma = new PrismaClient();
+
+export const create_comment = async (req: Request, res: Response) => {
     const schema = Joi.object({
         Text: Joi.string()
             .min(1)
@@ -14,20 +16,19 @@ export const create_comment = (req: Request, res: Response) => {
     const { error } = schema.validate(req.body, {abortEarly: false})
 
     if(error) return res.status(400).json({message: "Input Error"})
+    
+    const postExists = await prisma.posts.findUnique({where: {Id: req.params.PostId}})
+    if(!postExists) return res.status(400).json({message: "Post Does Not Exist"})
 
-    con.query(`SELECT * FROM Users WHERE Id="${req.params.UserId}"`, (err, result) => {
-        if (err) return res.status(500).json({message: "Server Error"});
-        if(result.length === 0) return res.status(400).json({message: "User Does Not Exist"})
+    await prisma.comments.create({
+        data: {
+            Id: v4(),
+            Text: req.body.Text,
+            User: req.params.UserId,
+            Post: req.params.PostId
+        }
+    })
 
-        con.query(`SELECT * FROM Posts Where Id="${req.params.PostId}"`, (err, result) => {
-            if (err) return res.status(500).json({message: "Server Error"});
-            if(result.length === 0) return res.status(400).json({message: "Post Does Not Exist"})
-
-            con.query(`INSERT INTO Comments (Id, Text, User, Post) VALUES ("${v4()}", "${req.body.text}", "${req.params.UserId}", "${req.params.PostId}")`, (err) => {
-                if (err) return res.status(500).json({message: "Server Error"});
-                res.status(200).json({message: "Successfully Created Comment"})
-            })
-        })
-    });
+    res.status(200).json({message: "Successfully Created Comment"})
 };
 

@@ -9,21 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const passport_local_1 = require("passport-local");
-const bcryptjs_1 = require("bcryptjs");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const LocalStrategy = new passport_local_1.Strategy({ usernameField: "Email", passwordField: "Password" }, (Email, Password, done) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield prisma.users.findFirst({ where: { Email: Email } });
-    if (!user)
-        return done(null, false, { message: "Incorrect Username" });
-    if (user) {
-        (0, bcryptjs_1.compare)(Password, user.Password, (err, res) => {
-            if (res) {
-                return done(null, user);
-            }
-            return done(null, false, { message: "Incorrect Password" });
-        });
-    }
-}));
-exports.default = LocalStrategy;
+const checkUserExists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userExists = yield prisma.users.findUnique({ where: { Id: req.params.UserId } });
+    if (!userExists)
+        return res.status(400).json({ message: "User Does Not Exist" });
+    next();
+});
+exports.default = checkUserExists;

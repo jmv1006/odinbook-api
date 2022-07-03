@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const passport_1 = __importDefault(require("passport"));
 require("dotenv/config");
-require("./config/db/db");
 const facebook_1 = __importDefault(require("./config/passport/facebook"));
 const local_1 = __importDefault(require("./config/passport/local"));
 const jwt_1 = __importDefault(require("./config/passport/jwt"));
@@ -22,9 +21,6 @@ passport_1.default.use(facebook_1.default);
 passport_1.default.use(local_1.default);
 passport_1.default.use(jwt_1.default);
 passport_1.default.initialize();
-app.use((req, res, next) => {
-    next();
-});
 app.use('/auth', auth_1.default);
 app.use('/posts', posts_1.default);
 app.use('/likes', likes_1.default);
