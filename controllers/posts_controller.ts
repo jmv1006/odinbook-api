@@ -31,3 +31,11 @@ export const create_post = (req: Request, res: Response) => {
         })
     })
 };
+
+export const get_timeline_posts = (req: Request, res: Response) => {
+
+    //Select from friendships
+    
+    //Design an algoritm that gets me the users post AND the posts of their friends
+    //SELECT from Posts WHERE Id=UserId or Id in()
+}

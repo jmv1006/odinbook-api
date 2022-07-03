@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create_post = exports.get_all_posts = void 0;
+exports.get_timeline_posts = exports.create_post = exports.get_all_posts = void 0;
 const db_1 = __importDefault(require("../config/db/db"));
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
@@ -37,3 +37,9 @@ const create_post = (req, res) => {
     });
 };
 exports.create_post = create_post;
+const get_timeline_posts = (req, res) => {
+    //Select from friendships
+    //Design an algoritm that gets me the users post AND the posts of their friends
+    //SELECT from Posts WHERE Id=UserId or Id in()
+};
+exports.get_timeline_posts = get_timeline_posts;

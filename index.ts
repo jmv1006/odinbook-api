@@ -10,6 +10,7 @@ import authRoute from './routes/auth';
 import postsRoute from './routes/posts';
 import likesRoute from './routes/likes'
 import commentsRoute from './routes/comments'
+import userRoute from './routes/user';
 
 const app = express();
 
@@ -21,10 +22,15 @@ passport.use(LocalStrategy);
 passport.use(JWTStrategy);
 passport.initialize();
 
+app.use((req, res, next) => {
+    next()
+});
+
 app.use('/auth', authRoute);
-app.use('/posts', passport.authenticate('jwt'), postsRoute);
-app.use('/likes', passport.authenticate('jwt'), likesRoute);
-app.use('/comments', passport.authenticate('jwt'),  commentsRoute);
+app.use('/posts', postsRoute);
+app.use('/likes', likesRoute);
+app.use('/comments', commentsRoute);
+app.use('/users', userRoute)
 
 app.get('/', (req: Request, res: Response) => {
     res.json("Hello From API!")

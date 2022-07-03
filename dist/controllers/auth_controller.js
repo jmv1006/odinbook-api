@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sign_up = exports.log_in = void 0;
+exports.log_in_facebook = exports.sign_up = exports.log_in = void 0;
 const db_1 = __importDefault(require("../config/db/db"));
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
@@ -70,3 +70,15 @@ const sign_up = (req, res) => {
     });
 };
 exports.sign_up = sign_up;
+const log_in_facebook = (req, res) => {
+    passport_1.default.authenticate('facebook', { session: false }, (err, user, info) => {
+        if (err) {
+            return res.status(400).json('Error Authenticating User');
+        }
+        if (!user) {
+            return res.status(400).json("Error Signing In");
+        }
+        res.send("hello");
+    })(req, res);
+};
+exports.log_in_facebook = log_in_facebook;

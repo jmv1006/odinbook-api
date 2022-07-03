@@ -73,3 +73,16 @@ export const sign_up = (req: Request, res: Response) => {
 
     });
 };
+
+export const log_in_facebook = (req: Request, res: Response) => {
+    passport.authenticate('facebook', {session: false}, (err, user, info) => {
+        if(err) {
+            return res.status(400).json('Error Authenticating User')
+        }
+
+        if(!user) {
+            return res.status(400).json("Error Signing In")
+        }
+        res.send("hello")
+    })(req, res)
+}
