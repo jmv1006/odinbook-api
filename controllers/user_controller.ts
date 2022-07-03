@@ -1,12 +1,17 @@
 import {Request, Response} from 'express';
-import { check_if_user_exists } from '../helpers/check_if_exists';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export const get_all_users = async (req: Request, res: Response) => {
-    res.json('All users here')
+    const allUsers = await prisma.users.findMany();
+    res.json(allUsers)
 };
 
-export const get_specific_user = (req: Request, res: Response) => {
-    res.json("Specific User Info")
+export const get_specific_user = async (req: Request, res: Response) => {
+    const user = await prisma.users.findFirst({where: {Id: req.params.UserId}})
+    if(user === null) return res.status(400).json({message: "User Does Not Exist"})
+    res.json(user)
 };
 
 export const get_user_friends = (req: Request, res: Response) => {
@@ -16,9 +21,5 @@ export const get_user_friends = (req: Request, res: Response) => {
 
 export const create_friends = async (req: Request, res: Response) => {
     //check if both users exist
-    const user1Exists = await check_if_user_exists(req.params.User1Id);
-    const user2Exists = await check_if_user_exists(req.params.User2Id);
-
-    if(!user1Exists || !user2Exists) return res.status(400).json({message: "Error Creating Friendship"})
     res.json("Post friends here")
 }

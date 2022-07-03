@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+model Comments {
+  Id   String  @id @db.VarChar(255)
+  Text String? @db.VarChar(500)
+  User String? @db.VarChar(255)
+  Post String? @db.VarChar(255)
+}
+
+model Friendships {
+  Id    String  @id @db.VarChar(255)
+  User1 String? @db.VarChar(255)
+  User2 String? @db.VarChar(255)
+}
+
+model Post_Likes {
+  Id   String  @id @db.VarChar(255)
+  User String? @db.VarChar(255)
+  Post String? @db.VarChar(255)
+}
+
+model Posts {
+  Id     String  @id @db.VarChar(255)
+  Text   String? @db.VarChar(500)
+  UserId String? @db.VarChar(255)
+}
+
+model Users {
+  Id          String  @id @db.VarChar(255)
+  DisplayName String? @db.VarChar(255)
+  Email       String? @db.VarChar(255)
+  Password    String? @db.VarChar(255)
+}

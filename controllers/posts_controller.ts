@@ -2,15 +2,17 @@ import con from "../config/db/db";
 import { Request, Response } from "express";
 import Joi from "joi";
 import { v4 } from "uuid";
+import { PrismaClient } from '@prisma/client';
 
-export const get_all_posts = (req: Request, res: Response) => {
-    con.query(`SELECT * FROM POSTS`, (err, result) => {
-        if(err) return res.status(500).json({message: "Server Error"})
-        return res.status(200).json(result)
-    })
+const prisma = new PrismaClient();
+
+export const get_all_posts = async (req: Request, res: Response) => {
+    const posts = await prisma.posts.findMany();
+    if(posts === null) return res.status(400).json({message: "No Posts!"})
+    return res.status(200).json(posts)
 };
 
-export const create_post = (req: Request, res: Response) => {
+export const create_post = async (req: Request, res: Response) => {
     const schema = Joi.object({
         Text: Joi.string()
             .min(1)
@@ -20,16 +22,20 @@ export const create_post = (req: Request, res: Response) => {
     const { error } = schema.validate(req.body, {abortEarly: false})
 
     if(error) return res.status(400).json("Error Creating Post")
-    
-    con.query(`SELECT Id FROM Users WHERE Id="${req.params.UserId}"`, (err, result) => {
-        if(err) return res.status(500).json({message: "Server Error"})
-        if(result.length === 0) return res.status(400).json({message: "User Does Not Exist"})
-        
-        con.query(`INSERT INTO Posts (Id, UserId, Text) VALUES ("${v4()}", "${req.params.UserId}", "${req.body.Text}")`, (err) => {
-            if(err) return res.status(500).json({message: "Error Creating Post"});
-            return res.status(200).json({message: "Successfully Created Post"})
-        })
+
+    const user =  await prisma.users.findFirst({where:{Id: req.params.UserId}})
+
+    if(!user) return res.status(400).json({message: "User Does Not Exist"})
+
+    await prisma.posts.create({
+        data: {
+            Id: v4(),
+            UserId: req.params.UserId,
+            Text: req.body.Text
+        }
     })
+
+    return res.status(200).json({message: "Successfully Created Post"})
 };
 
 export const get_timeline_posts = (req: Request, res: Response) => {
