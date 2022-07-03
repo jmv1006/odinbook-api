@@ -23,10 +23,15 @@ const get_specific_user = (req, res) => __awaiter(void 0, void 0, void 0, functi
     res.json({ user: user });
 });
 exports.get_specific_user = get_specific_user;
-const get_user_friends = (req, res) => {
-    //select from friendships where user1 or user2 equals userId
-    res.json("user friends here");
-};
+const get_user_friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //finds frienships where user is a member
+    const friendships = yield prisma.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
+    //filters out Ids of friends and into an array
+    const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
+    //finds friends
+    const friends = yield prisma.users.findMany({ where: { Id: { in: friendsIds } }, select: { Id: true, DisplayName: true, Email: true } });
+    res.json({ friends: friends });
+});
 exports.get_user_friends = get_user_friends;
 const create_friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //If User Ids provided are the same

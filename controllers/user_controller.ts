@@ -14,9 +14,18 @@ export const get_specific_user = async (req: Request, res: Response) => {
     res.json({user: user})
 };
 
-export const get_user_friends = (req: Request, res: Response) => {
-    //select from friendships where user1 or user2 equals userId
-    res.json("user friends here")
+export const get_user_friends = async (req: Request, res: Response) => {
+
+    //finds frienships where user is a member
+    const friendships = await prisma.friendships.findMany({where: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}})
+
+    //filters out Ids of friends and into an array
+    const friendsIds: Array<any>  = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1)
+
+    //finds friends
+    const friends = await prisma.users.findMany({where: {Id: {in: friendsIds}}, select:{Id: true, DisplayName: true, Email: true}})
+
+    res.json({friends: friends})
 };
 
 export const create_friends = async (req: Request, res: Response) => {
@@ -41,6 +50,5 @@ export const create_friends = async (req: Request, res: Response) => {
             User2: req.params.User2Id
         }
     })
-
     res.status(200).json({message: "Successfully Created Friendship"})
-}
+};

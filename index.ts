@@ -13,10 +13,13 @@ import likesRoute from './routes/likes'
 import commentsRoute from './routes/comments'
 import userRoute from './routes/user';
 
+import helmet from 'helmet';
+
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
 
 passport.use(FacebookStrategy);
 passport.use(LocalStrategy);
