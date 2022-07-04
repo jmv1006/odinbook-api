@@ -2,16 +2,18 @@ import {Request, Response} from 'express';
 import { PrismaClient } from '@prisma/client';
 import { v4 } from 'uuid';
 import Joi from 'joi';
+import client from '../config/redis/redis.config';
 
 const prisma = new PrismaClient();
 
 export const get_all_users = async (req: Request, res: Response) => {
     const allUsers = await prisma.users.findMany();
-    res.json(allUsers)
+    res.status(200).json(allUsers)
 };
 
 export const get_specific_user = async (req: Request, res: Response) => {
     const user = await prisma.users.findFirst({where: {Id: req.params.UserId}})
+    await client.setEx(`/users/${req.params.UserId}`, 3600, JSON.stringify(user));
     res.json({user: user})
 };
 
@@ -25,6 +27,9 @@ export const get_user_friends = async (req: Request, res: Response) => {
 
     //finds friends
     const friends = await prisma.users.findMany({where: {Id: {in: friendsIds}}, select:{Id: true, DisplayName: true, Email: true}})
+
+    //adding users friendlist to cache
+    await client.setEx(`/friends/${req.params.UserId}`, 3600, JSON.stringify(friends));
 
     res.json({friends: friends})
 };
@@ -76,6 +81,9 @@ export const edit_user_details = async (req: Request, res: Response) => {
             DisplayName: req.body.DisplayName
         }
     });
+
+    //deleting existing user details from cache, if they exist
+    await client.del(`/users/${req.params.UserId}`)
 
     res.status(200).json({message: "Successfully Updated User"})
 };

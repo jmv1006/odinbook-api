@@ -16,14 +16,16 @@ exports.edit_user_details = exports.create_friends = exports.get_user_friends = 
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
 const joi_1 = __importDefault(require("joi"));
+const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
 const prisma = new client_1.PrismaClient();
 const get_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const allUsers = yield prisma.users.findMany();
-    res.json(allUsers);
+    res.status(200).json(allUsers);
 });
 exports.get_all_users = get_all_users;
 const get_specific_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield prisma.users.findFirst({ where: { Id: req.params.UserId } });
+    yield redis_config_1.default.setEx(`/users/${req.params.UserId}`, 3600, JSON.stringify(user));
     res.json({ user: user });
 });
 exports.get_specific_user = get_specific_user;
@@ -34,6 +36,8 @@ const get_user_friends = (req, res) => __awaiter(void 0, void 0, void 0, functio
     const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
     //finds friends
     const friends = yield prisma.users.findMany({ where: { Id: { in: friendsIds } }, select: { Id: true, DisplayName: true, Email: true } });
+    //adding users friendlist to cache
+    yield redis_config_1.default.setEx(`/friends/${req.params.UserId}`, 3600, JSON.stringify(friends));
     res.json({ friends: friends });
 });
 exports.get_user_friends = get_user_friends;
@@ -81,6 +85,8 @@ const edit_user_details = (req, res) => __awaiter(void 0, void 0, void 0, functi
             DisplayName: req.body.DisplayName
         }
     });
+    //deleting existing user details from cache, if they exist
+    yield redis_config_1.default.del(`/users/${req.params.UserId}`);
     res.status(200).json({ message: "Successfully Updated User" });
 });
 exports.edit_user_details = edit_user_details;
