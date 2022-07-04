@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import { PrismaClient } from '@prisma/client';
 import { v4 } from 'uuid';
+import Joi from 'joi';
 
 const prisma = new PrismaClient();
 
@@ -51,4 +52,30 @@ export const create_friends = async (req: Request, res: Response) => {
         }
     })
     res.status(200).json({message: "Successfully Created Friendship"})
+};
+
+export const edit_user_details = async (req: Request, res: Response) => {
+    const schema = Joi.object({
+        Email: Joi.string()
+            .email()
+            .min(3),
+        DisplayName: Joi.string()
+            .min(3)
+    });
+
+    const { error } = schema.validate(req.body, {abortEarly: false});
+
+    if(error) return res.status(400).json({message: "error updating user details"})
+    
+    await prisma.users.update({
+        where: {
+            Id: req.params.UserId
+        },
+        data: {
+            Email: req.body.Email,
+            DisplayName: req.body.DisplayName
+        }
+    });
+
+    res.status(200).json({message: "Successfully Updated User"})
 };

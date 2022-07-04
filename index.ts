@@ -12,6 +12,7 @@ import postsRoute from './routes/posts';
 import likesRoute from './routes/likes'
 import commentsRoute from './routes/comments'
 import userRoute from './routes/user';
+import friendRequestsRoute from './routes/friend-requests';
 
 import helmet from 'helmet';
 
@@ -30,13 +31,14 @@ app.use('/auth', authRoute);
 app.use('/posts', postsRoute);
 app.use('/likes', likesRoute);
 app.use('/comments', commentsRoute);
-app.use('/users', userRoute)
+app.use('/users', userRoute);
+app.use('/friend-requests', friendRequestsRoute)
 
 app.get('/', (req: Request, res: Response) => {
     res.json("Hello From API!")
 });
 
-const port = 7000;
+const port = 7000 || process.env.PORT;
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}!`)

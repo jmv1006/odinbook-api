@@ -14,9 +14,12 @@ const posts_1 = __importDefault(require("./routes/posts"));
 const likes_1 = __importDefault(require("./routes/likes"));
 const comments_1 = __importDefault(require("./routes/comments"));
 const user_1 = __importDefault(require("./routes/user"));
+const friend_requests_1 = __importDefault(require("./routes/friend-requests"));
+const helmet_1 = __importDefault(require("helmet"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, helmet_1.default)());
 passport_1.default.use(facebook_1.default);
 passport_1.default.use(local_1.default);
 passport_1.default.use(jwt_1.default);
@@ -26,10 +29,11 @@ app.use('/posts', posts_1.default);
 app.use('/likes', likes_1.default);
 app.use('/comments', comments_1.default);
 app.use('/users', user_1.default);
+app.use('/friend-requests', friend_requests_1.default);
 app.get('/', (req, res) => {
     res.json("Hello From API!");
 });
-const port = 7000;
+const port = 7000 || process.env.PORT;
 app.listen(port, () => {
     console.log(`Server running on port ${port}!`);
 });

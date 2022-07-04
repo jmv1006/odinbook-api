@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create_friends = exports.get_user_friends = exports.get_specific_user = exports.get_all_users = void 0;
+exports.edit_user_details = exports.create_friends = exports.get_user_friends = exports.get_specific_user = exports.get_all_users = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
+const joi_1 = __importDefault(require("joi"));
 const prisma = new client_1.PrismaClient();
 const get_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const allUsers = yield prisma.users.findMany();
@@ -57,3 +61,26 @@ const create_friends = (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.status(200).json({ message: "Successfully Created Friendship" });
 });
 exports.create_friends = create_friends;
+const edit_user_details = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const schema = joi_1.default.object({
+        Email: joi_1.default.string()
+            .email()
+            .min(3),
+        DisplayName: joi_1.default.string()
+            .min(3)
+    });
+    const { error } = schema.validate(req.body, { abortEarly: false });
+    if (error)
+        return res.status(400).json({ message: "error updating user details" });
+    yield prisma.users.update({
+        where: {
+            Id: req.params.UserId
+        },
+        data: {
+            Email: req.body.Email,
+            DisplayName: req.body.DisplayName
+        }
+    });
+    res.status(200).json({ message: "Successfully Updated User" });
+});
+exports.edit_user_details = edit_user_details;

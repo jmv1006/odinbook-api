@@ -7,6 +7,6 @@ router.get('/all', get_all_posts);
 
 router.post('/:UserId', checkUserExists, create_post);
 
-router.post('/:UserId/timeline', checkUserExists, get_timeline_posts)
+router.get('/:UserId/timeline', get_timeline_posts)
 
 export default router;

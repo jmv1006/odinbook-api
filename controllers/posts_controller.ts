@@ -26,17 +26,23 @@ export const create_post = async (req: Request, res: Response) => {
         data: {
             Id: v4(),
             UserId: req.params.UserId,
-            Text: req.body.Text
+            Text: req.body.Text,
+            Date: new Date()
         }
     });
 
     return res.status(200).json({message: "Successfully Created Post"})
 };
 
-export const get_timeline_posts = (req: Request, res: Response) => {
-
-    //Select from friendships
+export const get_timeline_posts = async (req: Request, res: Response) => {
     
-    //Design an algoritm that gets me the users post AND the posts of their friends
-    //SELECT from Posts WHERE Id=UserId or Id in()
+    //finds frienships where user is a member
+    const friendships = await prisma.friendships.findMany({where: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}})
+
+    //filters out Ids of friends and into an array
+    const friendsIds: Array<any>  = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1)
+
+    const posts = await prisma.posts.findMany({where: {OR: [{UserId: req.params.UserId}, {UserId: {in: friendsIds}}]}, orderBy: {Date: 'desc'}})
+
+    res.status(200).json({posts: posts})
 }

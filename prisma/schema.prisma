@@ -27,9 +27,10 @@ model Post_Likes {
 }
 
 model Posts {
-  Id     String  @id @db.VarChar(255)
-  Text   String? @db.VarChar(500)
-  UserId String? @db.VarChar(255)
+  Id     String    @id @db.VarChar(255)
+  Text   String?   @db.VarChar(500)
+  UserId String?   @db.VarChar(255)
+  Date   DateTime? @db.DateTime(0)
 }
 
 model Users {
@@ -37,4 +38,10 @@ model Users {
   DisplayName String? @db.VarChar(255)
   Email       String? @db.VarChar(255)
   Password    String  @db.VarChar(255)
+}
+
+model friend_requests {
+  Id    String  @id @db.VarChar(255)
+  User1 String? @db.VarChar(255)
+  User2 String? @db.VarChar(255)
 }

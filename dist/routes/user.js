@@ -9,6 +9,7 @@ const user_controller_1 = require("../controllers/user_controller");
 const check_user_exists_1 = __importDefault(require("../middleware/check_user_exists"));
 router.get('/all', user_controller_1.get_all_users);
 router.get('/:UserId', check_user_exists_1.default, user_controller_1.get_specific_user);
+router.put('/:UserId', check_user_exists_1.default, user_controller_1.edit_user_details);
 router.get('/:UserId/friends', check_user_exists_1.default, user_controller_1.get_user_friends);
 router.post('/:User1Id/friends/:User2Id', user_controller_1.create_friends);
 exports.default = router;
