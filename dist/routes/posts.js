@@ -9,5 +9,5 @@ const posts_controller_1 = require("../controllers/posts_controller");
 const check_user_exists_1 = __importDefault(require("../middleware/check_user_exists"));
 router.get('/all', posts_controller_1.get_all_posts);
 router.post('/:UserId', check_user_exists_1.default, posts_controller_1.create_post);
-router.get('/:UserId/timeline', posts_controller_1.get_timeline_posts);
+router.get('/:UserId/timeline', check_user_exists_1.default, posts_controller_1.get_timeline_posts);
 exports.default = router;

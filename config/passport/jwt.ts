@@ -1,9 +1,11 @@
-
+import { Request } from "express";
 import { Strategy } from "passport-jwt";
 import { ExtractJwt } from "passport-jwt";
-import con from "../db/db";
+import { PrismaClient } from "@prisma/client";
 
-const cookieExtractor = (req: any) => {
+const prisma = new PrismaClient();
+
+const cookieExtractor = (req: Request) => {
     let token = null;
     if(req && req.cookies) {
         token = req.cookies['token']
@@ -16,17 +18,13 @@ const opts = {
     secretOrKey: process.env.TOKEN_SECRET
 };
 
-const strategy = new Strategy(opts, (payload, done) => {
-    console.log(payload)
-    con.query(`SELECT * FROM Users WHERE Id="${payload.user.Id}"`, (err, result) => {
-        if(err) {
-            //error connecting to db
-        }
-        if(!result) {
-            return done(null, false)
-        }
-        return done(null, result[0])
-    });
+const strategy = new Strategy(opts, async (payload, done) => {
+    
+    const user = await prisma.users.findUnique({where: {Id: payload.user.Id}});
+
+    if(!user) return done(null, false)
+
+    return done(null, user)
 });
 
 export default strategy;
