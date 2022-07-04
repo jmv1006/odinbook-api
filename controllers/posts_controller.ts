@@ -35,7 +35,6 @@ export const create_post = async (req: Request, res: Response) => {
 };
 
 export const get_timeline_posts = async (req: Request, res: Response) => {
-    
     //finds frienships where user is a member
     const friendships = await prisma.friendships.findMany({where: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}})
 
@@ -44,5 +43,6 @@ export const get_timeline_posts = async (req: Request, res: Response) => {
 
     const posts = await prisma.posts.findMany({where: {OR: [{UserId: req.params.UserId}, {UserId: {in: friendsIds}}]}, orderBy: {Date: 'desc'}})
 
+    
     res.status(200).json({posts: posts})
 }

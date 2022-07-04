@@ -8,40 +8,72 @@ datasource db {
 }
 
 model Comments {
-  Id   String  @id @db.VarChar(255)
-  Text String? @db.VarChar(500)
-  User String? @db.VarChar(255)
-  Post String? @db.VarChar(255)
+  Id    String  @id @db.VarChar(255)
+  Text  String? @db.VarChar(500)
+  User  String? @db.VarChar(255)
+  Post  String? @db.VarChar(255)
+  Posts Posts?  @relation(fields: [Post], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CommentPost")
+  Users Users?  @relation(fields: [User], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CommentUser")
+
+  @@index([Post], map: "FK_CommentPost")
+  @@index([User], map: "FK_CommentUser")
 }
 
 model Friendships {
-  Id    String  @id @db.VarChar(255)
-  User1 String? @db.VarChar(255)
-  User2 String? @db.VarChar(255)
+  Id                             String  @id @db.VarChar(255)
+  User1                          String? @db.VarChar(255)
+  User2                          String? @db.VarChar(255)
+  Users_Friendships_User1ToUsers Users?  @relation("Friendships_User1ToUsers", fields: [User1], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Friendship_User1")
+  Users_Friendships_User2ToUsers Users?  @relation("Friendships_User2ToUsers", fields: [User2], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Friendship_User2")
+
+  @@index([User1], map: "FK_Friendship_User1")
+  @@index([User2], map: "FK_Friendship_User2")
 }
 
 model Post_Likes {
-  Id   String  @id @db.VarChar(255)
-  User String? @db.VarChar(255)
-  Post String? @db.VarChar(255)
+  Id    String  @id @db.VarChar(255)
+  User  String? @db.VarChar(255)
+  Post  String? @db.VarChar(255)
+  Posts Posts?  @relation(fields: [Post], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Post")
+  Users Users?  @relation(fields: [User], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_PostUser")
+
+  @@index([Post], map: "FK_Post")
+  @@index([User], map: "FK_PostUser")
 }
 
 model Posts {
-  Id     String    @id @db.VarChar(255)
-  Text   String?   @db.VarChar(500)
-  UserId String?   @db.VarChar(255)
-  Date   DateTime? @db.DateTime(0)
+  Id         String       @id @db.VarChar(255)
+  Text       String?      @db.VarChar(500)
+  UserId     String?      @db.VarChar(255)
+  Date       DateTime?    @db.DateTime(0)
+  Users      Users?       @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Post_UserId")
+  Comments   Comments[]
+  Post_Likes Post_Likes[]
+
+  @@index([UserId], map: "FK_Post_UserId")
 }
 
 model Users {
-  Id          String  @id @db.VarChar(255)
-  DisplayName String? @db.VarChar(255)
-  Email       String? @db.VarChar(255)
-  Password    String  @db.VarChar(255)
+  Id                                           String            @id @db.VarChar(255)
+  DisplayName                                  String?           @db.VarChar(255)
+  Email                                        String?           @db.VarChar(255)
+  Password                                     String            @db.VarChar(255)
+  Comments                                     Comments[]
+  Friendships_Friendships_User1ToUsers         Friendships[]     @relation("Friendships_User1ToUsers")
+  Friendships_Friendships_User2ToUsers         Friendships[]     @relation("Friendships_User2ToUsers")
+  Post_Likes                                   Post_Likes[]
+  Posts                                        Posts[]
+  friend_requests_UsersTofriend_requests_User1 friend_requests[] @relation("UsersTofriend_requests_User1")
+  friend_requests_UsersTofriend_requests_User2 friend_requests[] @relation("UsersTofriend_requests_User2")
 }
 
 model friend_requests {
-  Id    String  @id @db.VarChar(255)
-  User1 String? @db.VarChar(255)
-  User2 String? @db.VarChar(255)
+  Id                                 String  @id @db.VarChar(255)
+  User1                              String? @db.VarChar(255)
+  User2                              String? @db.VarChar(255)
+  Users_UsersTofriend_requests_User1 Users?  @relation("UsersTofriend_requests_User1", fields: [User1], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User1")
+  Users_UsersTofriend_requests_User2 Users?  @relation("UsersTofriend_requests_User2", fields: [User2], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User2")
+
+  @@index([User1], map: "FK_User1")
+  @@index([User2], map: "FK_User2")
 }

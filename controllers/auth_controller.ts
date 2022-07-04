@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 export const log_in = (req: Request, res: Response) => {
     passport.authenticate('local', {session: false}, (err, user) => {
         if(err) {
-            return res.status(400).json('Error Authenticating User')
+            return res.status(500).json('Server Error')
         }
 
         if(!user) {
@@ -92,3 +92,8 @@ export const log_in_facebook = (req: Request, res: Response) => {
         res.send("hello")
     })(req, res)
 };
+
+export const check_for_token = (req: Request, res: Response) => {
+
+    res.json("Token Here")
+}

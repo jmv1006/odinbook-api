@@ -34,7 +34,7 @@ app.use('/friend-requests', friend_requests_1.default);
 app.get('/', (req, res) => {
     res.json("Hello From API!");
 });
-const port = 7000 || process.env.PORT;
-app.listen(port, () => {
-    console.log(`Server running on port ${port}!`);
+const PORT = 7000 || process.env.PORT;
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
 });

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.log_in_facebook = exports.sign_up = exports.log_in = void 0;
+exports.check_for_token = exports.log_in_facebook = exports.sign_up = exports.log_in = void 0;
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const bcryptjs_1 = require("bcryptjs");
@@ -23,7 +23,7 @@ const prisma = new client_1.PrismaClient();
 const log_in = (req, res) => {
     passport_1.default.authenticate('local', { session: false }, (err, user) => {
         if (err) {
-            return res.status(400).json('Error Authenticating User');
+            return res.status(500).json('Server Error');
         }
         if (!user) {
             return res.status(400).json("Error Signing In");
@@ -94,3 +94,7 @@ const log_in_facebook = (req, res) => {
     })(req, res);
 };
 exports.log_in_facebook = log_in_facebook;
+const check_for_token = (req, res) => {
+    res.json("Token Here");
+};
+exports.check_for_token = check_for_token;
