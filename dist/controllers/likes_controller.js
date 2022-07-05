@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.remove_post_like = exports.create_post_like = void 0;
+exports.get_post_likes = exports.remove_post_like = exports.create_post_like = void 0;
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
@@ -32,3 +32,8 @@ const remove_post_like = (req, res) => __awaiter(void 0, void 0, void 0, functio
     res.status(200).json({ message: "Successfully Removed Like" });
 });
 exports.remove_post_like = remove_post_like;
+const get_post_likes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const likes = yield prisma.post_Likes.findMany();
+    res.json({ likes: likes, amount: likes.length });
+});
+exports.get_post_likes = get_post_likes;

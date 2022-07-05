@@ -82,16 +82,12 @@ export const sign_up = async (req: Request, res: Response) => {
 
 export const log_in_facebook = (req: Request, res: Response) => {
     passport.authenticate('facebook', {session: false}, (err, user) => {
-        if(err) {
-            return res.status(400).json('Error Authenticating User')
-        }
-
         if(!user) {
-            return res.status(400).json("Error Signing In")
+            return res.json("No User")
         }
-        res.send("hello")
+        return res.json(user)
     })(req, res)
-};
+}
 
 export const check_for_token = (req: Request, res: Response) => {
     res.json("Token Here")

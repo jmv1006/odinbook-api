@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import Joi from "joi";
 import { v4 } from "uuid";
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from "../config/prisma/initialize-client";
 
 export const get_all_posts = async (req: Request, res: Response) => {
     const posts = await prisma.posts.findMany();

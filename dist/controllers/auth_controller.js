@@ -84,13 +84,10 @@ const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.sign_up = sign_up;
 const log_in_facebook = (req, res) => {
     passport_1.default.authenticate('facebook', { session: false }, (err, user) => {
-        if (err) {
-            return res.status(400).json('Error Authenticating User');
-        }
         if (!user) {
-            return res.status(400).json("Error Signing In");
+            return res.json("No User");
         }
-        res.send("hello");
+        return res.json(user);
     })(req, res);
 };
 exports.log_in_facebook = log_in_facebook;

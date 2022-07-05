@@ -10,10 +10,11 @@ import JWTStrategy from './config/passport/jwt';
 
 import authRoute from './routes/auth';
 import postsRoute from './routes/posts';
-import likesRoute from './routes/likes'
-import commentsRoute from './routes/comments'
+import likesRoute from './routes/likes';
+import commentsRoute from './routes/comments';
 import userRoute from './routes/user';
 import friendRequestsRoute from './routes/friend-requests';
+import friendshipsRoute from './routes/friendships';
 
 import helmet from 'helmet';
 
@@ -34,6 +35,7 @@ app.use('/likes', likesRoute);
 app.use('/comments', commentsRoute);
 app.use('/users', userRoute);
 app.use('/friend-requests', friendRequestsRoute);
+app.use('/friendships', friendshipsRoute);
 
 app.get('/', (req: Request, res: Response) => {
     res.json("Hello From API!")

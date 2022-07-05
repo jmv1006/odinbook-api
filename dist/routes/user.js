@@ -7,7 +7,6 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const user_controller_1 = require("../controllers/user_controller");
 const check_user_exists_1 = __importDefault(require("../middleware/auth/check_user_exists"));
-const checkFriendsCache_1 = __importDefault(require("../middleware/cache/checkFriendsCache"));
 const checkUsersCache_1 = __importDefault(require("../middleware/cache/checkUsersCache"));
 const multer_config_1 = __importDefault(require("../config/multer/multer-config"));
 const deletingExistingProfileImg_1 = __importDefault(require("../middleware/aws/deletingExistingProfileImg"));
@@ -18,6 +17,4 @@ router.post('/:UserId/profile-img', check_user_exists_1.default, multer_config_1
 //PUT profile-img route differs from POST because it DELETES an existing image if it exists...
 router.put('/:UserId/profile-img', check_user_exists_1.default, deletingExistingProfileImg_1.default, multer_config_1.default.single('image'), user_controller_1.handleProfileImg);
 router.delete('/:UserId/profile-img', deletingExistingProfileImg_1.default, user_controller_1.profileImgDelete);
-router.get('/:UserId/friends', check_user_exists_1.default, checkFriendsCache_1.default, user_controller_1.get_user_friends);
-router.post('/:User1Id/friends/:User2Id', user_controller_1.create_friends);
 exports.default = router;
