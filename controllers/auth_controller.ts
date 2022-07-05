@@ -94,6 +94,5 @@ export const log_in_facebook = (req: Request, res: Response) => {
 };
 
 export const check_for_token = (req: Request, res: Response) => {
-
     res.json("Token Here")
 }

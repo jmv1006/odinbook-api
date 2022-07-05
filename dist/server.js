@@ -26,16 +26,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = __importDefault(require("./index"));
 const http = __importStar(require("http"));
-//import { Server } from "socket.io";
-//import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "./interfaces/socketIo";
-const server = http.createServer(index_1.default);
-/*
-const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {
-    cors: { origin: "*" },
-});
-*/
+const app_1 = __importDefault(require("./app"));
+const server = http.createServer(app_1.default);
 const PORT = 7000 || process.env.PORT;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

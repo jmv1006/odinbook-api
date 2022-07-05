@@ -58,6 +58,7 @@ model Users {
   DisplayName                                  String?           @db.VarChar(255)
   Email                                        String?           @db.VarChar(255)
   Password                                     String            @db.VarChar(255)
+  ProfileImg                                   String?           @db.VarChar(255)
   Comments                                     Comments[]
   Friendships_Friendships_User1ToUsers         Friendships[]     @relation("Friendships_User1ToUsers")
   Friendships_Friendships_User2ToUsers         Friendships[]     @relation("Friendships_User2ToUsers")

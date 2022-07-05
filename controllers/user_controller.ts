@@ -7,12 +7,12 @@ import client from '../config/redis/redis.config';
 const prisma = new PrismaClient();
 
 export const get_all_users = async (req: Request, res: Response) => {
-    const allUsers = await prisma.users.findMany();
+    const allUsers = await prisma.users.findMany({select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}});
     res.status(200).json(allUsers)
 };
 
 export const get_specific_user = async (req: Request, res: Response) => {
-    const user = await prisma.users.findFirst({where: {Id: req.params.UserId}})
+    const user = await prisma.users.findFirst({where: {Id: req.params.UserId}, select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}});
     await client.setEx(`/users/${req.params.UserId}`, 3600, JSON.stringify(user));
     res.json({user: user})
 };
