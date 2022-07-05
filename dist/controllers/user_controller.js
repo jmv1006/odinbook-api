@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.edit_user_details = exports.create_friends = exports.get_user_friends = exports.get_specific_user = exports.get_all_users = void 0;
+exports.profileImgDelete = exports.handleProfileImg = exports.edit_user_details = exports.create_friends = exports.get_user_friends = exports.get_specific_user = exports.get_all_users = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
 const joi_1 = __importDefault(require("joi"));
@@ -90,3 +90,16 @@ const edit_user_details = (req, res) => __awaiter(void 0, void 0, void 0, functi
     res.status(200).json({ message: "Successfully Updated User" });
 });
 exports.edit_user_details = edit_user_details;
+const handleProfileImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.file)
+        return res.status(400).json({ message: 'No File Sent In Request' });
+    const file = req.file;
+    yield prisma.users.update({ where: { Id: req.params.UserId }, data: { ProfileImg: file.location } });
+    return res.status(200).json({ message: 'File Successfully Uploaded' });
+});
+exports.handleProfileImg = handleProfileImg;
+const profileImgDelete = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma.users.update({ where: { Id: req.params.UserId }, data: { ProfileImg: null } });
+    return res.status(200).json({ message: 'Image Successfully Deleted' });
+});
+exports.profileImgDelete = profileImgDelete;

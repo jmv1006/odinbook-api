@@ -14,7 +14,6 @@ import likesRoute from './routes/likes'
 import commentsRoute from './routes/comments'
 import userRoute from './routes/user';
 import friendRequestsRoute from './routes/friend-requests';
-import imagesRoute from './routes/images';
 
 import helmet from 'helmet';
 
@@ -35,7 +34,6 @@ app.use('/likes', likesRoute);
 app.use('/comments', commentsRoute);
 app.use('/users', userRoute);
 app.use('/friend-requests', friendRequestsRoute);
-app.use('/images', imagesRoute);
 
 app.get('/', (req: Request, res: Response) => {
     res.json("Hello From API!")

@@ -1,7 +1,5 @@
 import {Request, Response, NextFunction} from 'express'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient();
+import prisma from '../../config/prisma/initialize-client';
 
 const checkUserExists = async (req: Request, res: Response, next: NextFunction) => {
     const userExists = await prisma.users.findUnique({where: {Id: req.params.UserId}});

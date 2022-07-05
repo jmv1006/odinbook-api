@@ -8,14 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
-const checkForFile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.file)
-        return res.status(400).json({ message: 'No File Sent In Request' });
-    const file = req.file;
-    yield prisma.users.update({ where: { Id: req.params.UserId }, data: { ProfileImg: file.location } });
-    return res.status(200).json({ message: 'File Successfulyl Uploaded' });
+const initialize_client_1 = __importDefault(require("../../config/prisma/initialize-client"));
+const checkUserExists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userExists = yield initialize_client_1.default.users.findUnique({ where: { Id: req.params.UserId } });
+    if (!userExists)
+        return res.status(400).json({ message: "User Does Not Exist" });
+    next();
 });
-exports.default = checkForFile;
+exports.default = checkUserExists;

@@ -16,7 +16,6 @@ const likes_1 = __importDefault(require("./routes/likes"));
 const comments_1 = __importDefault(require("./routes/comments"));
 const user_1 = __importDefault(require("./routes/user"));
 const friend_requests_1 = __importDefault(require("./routes/friend-requests"));
-const images_1 = __importDefault(require("./routes/images"));
 const helmet_1 = __importDefault(require("helmet"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -32,7 +31,6 @@ app.use('/likes', likes_1.default);
 app.use('/comments', comments_1.default);
 app.use('/users', user_1.default);
 app.use('/friend-requests', friend_requests_1.default);
-app.use('/images', images_1.default);
 app.get('/', (req, res) => {
     res.json("Hello From API!");
 });

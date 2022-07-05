@@ -19,7 +19,8 @@ const upload = (0, multer_1.default)({
         s3: aws_config_1.default,
         bucket: 'odinbook-jmv1006',
         key: function (req, file, done) {
-            done(null, req.params.UserId + file.originalname);
+            const ext = path_1.default.extname(file.originalname);
+            done(null, req.params.UserId + '-profileimg' + ext);
         }
     })
 });

@@ -16,7 +16,8 @@ const upload = multer({
         s3: s3,
         bucket: 'odinbook-jmv1006',
         key: function (req: Request, file, done) {
-            done(null, req.params.UserId + file.originalname);
+            const ext: string = path.extname(file.originalname);
+            done(null, req.params.UserId + '-profileimg' + ext);
         }
     })
 });
