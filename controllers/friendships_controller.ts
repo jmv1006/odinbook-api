@@ -5,8 +5,12 @@ import client from '../config/redis/redis.config';
 
 const prisma = new PrismaClient();
 
-export const get_user_friends = async (req: Request, res: Response) => {
+export const get_all_friendships = async (req: Request, res: Response) => {
+    const friendships = await prisma.friendships.findMany();
+    res.json(friendships)
+}
 
+export const get_user_friends = async (req: Request, res: Response) => {
     //finds frienships where user is a member
     const friendships = await prisma.friendships.findMany({where: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}})
 
@@ -44,13 +48,21 @@ export const create_friends = async (req: Request, res: Response) => {
             User2: req.params.User2Id
         }
     })
+
+    await client.del(`/friends/${req.params.User1Id}`);
+    await client.del(`/friends/${req.params.User2Id}`);
+
     res.status(200).json({message: "Successfully Created Friendship"})
 };
 
 export const delete_friends = async (req: Request, res: Response) => {
     const friendshipExists = await prisma.friendships.findUnique({where: {Id: req.params.FriendshipId}})
     if(!friendshipExists) return res.status(400).json({message: "Friendship with given ID does not exist"})
-    
+
     await prisma.friendships.delete({where: {Id: req.params.FriendshipId}});
-    res.status(200).json({message: "Successfully Created Friendship"})
+
+    await client.del(`/friends/${friendshipExists.User1}`);
+    await client.del(`/friends/${friendshipExists.User2}`);
+
+    res.status(200).json({message: "Successfully Deleted Friendship"})
 };

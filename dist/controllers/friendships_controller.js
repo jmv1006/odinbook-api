@@ -12,11 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_friends = exports.create_friends = exports.get_user_friends = void 0;
+exports.delete_friends = exports.create_friends = exports.get_user_friends = exports.get_all_friendships = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
 const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
 const prisma = new client_1.PrismaClient();
+const get_all_friendships = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const friendships = yield prisma.friendships.findMany();
+    res.json(friendships);
+});
+exports.get_all_friendships = get_all_friendships;
 const get_user_friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //finds frienships where user is a member
     const friendships = yield prisma.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
@@ -50,6 +55,8 @@ const create_friends = (req, res) => __awaiter(void 0, void 0, void 0, function*
             User2: req.params.User2Id
         }
     });
+    yield redis_config_1.default.del(`/friends/${req.params.User1Id}`);
+    yield redis_config_1.default.del(`/friends/${req.params.User2Id}`);
     res.status(200).json({ message: "Successfully Created Friendship" });
 });
 exports.create_friends = create_friends;
@@ -58,6 +65,8 @@ const delete_friends = (req, res) => __awaiter(void 0, void 0, void 0, function*
     if (!friendshipExists)
         return res.status(400).json({ message: "Friendship with given ID does not exist" });
     yield prisma.friendships.delete({ where: { Id: req.params.FriendshipId } });
-    res.status(200).json({ message: "Successfully Created Friendship" });
+    yield redis_config_1.default.del(`/friends/${friendshipExists.User1}`);
+    yield redis_config_1.default.del(`/friends/${friendshipExists.User2}`);
+    res.status(200).json({ message: "Successfully Deleted Friendship" });
 });
 exports.delete_friends = delete_friends;

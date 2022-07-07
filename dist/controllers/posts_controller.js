@@ -17,10 +17,11 @@ const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const initialize_client_1 = __importDefault(require("../config/prisma/initialize-client"));
 const get_all_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const posts = yield initialize_client_1.default.posts.findMany();
+    const posts = yield initialize_client_1.default.posts.findMany({ orderBy: { Date: 'desc' }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true } } } });
     if (!posts)
         return res.status(400).json({ message: "No Posts!" });
-    return res.status(200).json(posts);
+    console.log(posts);
+    return res.status(200).json({ posts: posts });
 });
 exports.get_all_posts = get_all_posts;
 const create_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,7 +49,7 @@ const get_timeline_posts = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
     //filters out Ids of friends and into an array
     const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
-    const posts = yield initialize_client_1.default.posts.findMany({ where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, orderBy: { Date: 'desc' } });
-    res.status(200).json({ posts: posts });
+    const postsI = yield initialize_client_1.default.posts.findMany({ where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
+    res.status(200).json({ posts: postsI });
 });
 exports.get_timeline_posts = get_timeline_posts;

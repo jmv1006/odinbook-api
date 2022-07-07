@@ -5,7 +5,7 @@ const checkFriendsCache = async (req: Request, res: Response, next: NextFunction
     const userId: string = req.params.UserId;
 
     const friends = await client.get(`/friends/${userId}`);
-    
+   
     if(!friends) {
         return next()
     }

@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const passport_1 = __importDefault(require("passport"));
 require("dotenv/config");
 require("./config/redis/redis.config");
+require("./faker");
 const facebook_1 = __importDefault(require("./config/passport/facebook"));
 const local_1 = __importDefault(require("./config/passport/local"));
 const jwt_1 = __importDefault(require("./config/passport/jwt"));

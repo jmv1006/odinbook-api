@@ -9,6 +9,5 @@ const likes_controller_1 = require("../controllers/likes_controller");
 const check_user_exists_1 = __importDefault(require("../middleware/auth/check_user_exists"));
 const check_post_exists_1 = __importDefault(require("../middleware/auth/check_post_exists"));
 router.get('/post/:PostId', check_post_exists_1.default, likes_controller_1.get_post_likes);
-router.post('/post/:PostId/:UserId', check_user_exists_1.default, check_post_exists_1.default, likes_controller_1.create_post_like);
-router.delete('/post/:PostId/:UserId', check_user_exists_1.default, check_post_exists_1.default, likes_controller_1.remove_post_like);
+router.post('/post/:PostId/:UserId', check_user_exists_1.default, check_post_exists_1.default, likes_controller_1.toggle_post_like);
 exports.default = router;

@@ -4,6 +4,8 @@ import passport from 'passport';
 import 'dotenv/config';
 import './config/redis/redis.config';
 
+import './faker';
+
 import FacebookStrategy from './config/passport/facebook';
 import LocalStrategy from './config/passport/local';
 import JWTStrategy from './config/passport/jwt';

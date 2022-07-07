@@ -8,4 +8,5 @@ const router = express_1.default.Router();
 const comments_controller_1 = require("../controllers/comments_controller");
 const check_user_exists_1 = __importDefault(require("../middleware/auth/check_user_exists"));
 router.post('/:PostId/:UserId', check_user_exists_1.default, comments_controller_1.create_comment);
+router.get('/:PostId', comments_controller_1.get_post_comments);
 exports.default = router;

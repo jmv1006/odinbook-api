@@ -9,14 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_post_likes = exports.remove_post_like = exports.create_post_like = void 0;
+exports.toggle_post_like = exports.get_post_likes = void 0;
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const create_post_like = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const get_post_likes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const likes = yield prisma.post_Likes.findMany({ where: { Post: req.params.PostId } });
+    res.json({ likes: likes, amount: likes.length });
+});
+exports.get_post_likes = get_post_likes;
+const toggle_post_like = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postIsLiked = yield prisma.post_Likes.findFirst({ where: { User: req.params.UserId, Post: req.params.PostId } });
-    if (postIsLiked)
-        return res.status(400).json({ message: "Post Is Already Liked" });
+    if (postIsLiked) {
+        yield prisma.post_Likes.deleteMany({ where: { User: req.params.UserId, Post: req.params.PostId } });
+        return res.status(200).json({ message: "Successfully Removed Like" });
+    }
     yield prisma.post_Likes.create({
         data: {
             Id: (0, uuid_1.v4)(),
@@ -26,14 +33,4 @@ const create_post_like = (req, res) => __awaiter(void 0, void 0, void 0, functio
     });
     return res.status(200).json({ message: "Successfully Created Like" });
 });
-exports.create_post_like = create_post_like;
-const remove_post_like = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield prisma.post_Likes.deleteMany({ where: { User: req.params.UserId, Post: req.params.PostId } });
-    res.status(200).json({ message: "Successfully Removed Like" });
-});
-exports.remove_post_like = remove_post_like;
-const get_post_likes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const likes = yield prisma.post_Likes.findMany();
-    res.json({ likes: likes, amount: likes.length });
-});
-exports.get_post_likes = get_post_likes;
+exports.toggle_post_like = toggle_post_like;

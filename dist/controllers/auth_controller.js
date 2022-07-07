@@ -32,6 +32,7 @@ const log_in = (req, res) => {
             Id: user.Id,
             DisplayName: user.DisplayName,
             Email: user.Email,
+            ProfileImg: user.ProfileImg
         };
         const tokenSecret = process.env.TOKEN_SECRET;
         const token = (0, jsonwebtoken_1.sign)({ user: tokenUser }, tokenSecret, { expiresIn: '15m' });
@@ -63,7 +64,7 @@ const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
     const { error } = schema.validate(req.body, { abortEarly: false });
     if (error) {
-        res.status(400).json("Error Signing Up");
+        res.status(400).json({ message: "Error Signing Up" });
         return;
     }
     const existingUser = yield prisma.users.findFirst({ where: { Email: req.body.Email } });

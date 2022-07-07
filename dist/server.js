@@ -26,9 +26,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.io = void 0;
 const http = __importStar(require("http"));
 const app_1 = __importDefault(require("./app"));
+const socket_io_1 = require("socket.io");
 const server = http.createServer(app_1.default);
+exports.io = new socket_io_1.Server(server, {
+    cors: { origin: "*" }
+});
+require("./config/socket-io/socket-io-config");
 const PORT = 7000 || process.env.PORT;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

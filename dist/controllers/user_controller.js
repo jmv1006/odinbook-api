@@ -19,7 +19,7 @@ const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
 const prisma = new client_1.PrismaClient();
 const get_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const allUsers = yield prisma.users.findMany({ select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } });
-    res.status(200).json(allUsers);
+    res.status(200).json({ users: allUsers });
 });
 exports.get_all_users = get_all_users;
 const get_specific_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

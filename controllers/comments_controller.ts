@@ -32,3 +32,11 @@ export const create_comment = async (req: Request, res: Response) => {
     res.status(200).json({message: "Successfully Created Comment"})
 };
 
+export const get_post_comments = async (req: Request, res: Response) => {
+    const comments = await prisma.comments.findMany({where: {Post: req.params.PostId}})
+
+    if(!comments) return res.status(400).json({message: "Error finding comments for post"})
+
+    return res.status(200).json({comments: comments, amount: comments.length})
+}
+

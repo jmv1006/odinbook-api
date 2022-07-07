@@ -22,6 +22,7 @@ export const log_in = (req: Request, res: Response) => {
             Id: user.Id,
             DisplayName: user.DisplayName,
             Email: user.Email,
+            ProfileImg: user.ProfileImg
         }
         
         const tokenSecret: any = process.env.TOKEN_SECRET;
@@ -59,7 +60,7 @@ export const sign_up = async (req: Request, res: Response) => {
     const { error } = schema.validate(req.body, {abortEarly: false})
 
     if(error) {
-        res.status(400).json("Error Signing Up")
+        res.status(400).json({message: "Error Signing Up"})
         return
     }
 

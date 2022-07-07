@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export const get_all_users = async (req: Request, res: Response) => {
     const allUsers = await prisma.users.findMany({select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}});
-    res.status(200).json(allUsers)
+    res.status(200).json({users: allUsers})
 };
 
 export const get_specific_user = async (req: Request, res: Response) => {

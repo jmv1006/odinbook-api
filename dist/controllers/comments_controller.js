@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create_comment = void 0;
+exports.get_post_comments = exports.create_comment = void 0;
 const uuid_1 = require("uuid");
 const joi_1 = __importDefault(require("joi"));
 const client_1 = require("@prisma/client");
@@ -41,3 +41,10 @@ const create_comment = (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.status(200).json({ message: "Successfully Created Comment" });
 });
 exports.create_comment = create_comment;
+const get_post_comments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const comments = yield prisma.comments.findMany({ where: { Post: req.params.PostId } });
+    if (!comments)
+        return res.status(400).json({ message: "Error finding comments for post" });
+    return res.status(200).json({ comments: comments, amount: comments.length });
+});
+exports.get_post_comments = get_post_comments;
