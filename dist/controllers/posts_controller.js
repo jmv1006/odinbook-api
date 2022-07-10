@@ -20,7 +20,6 @@ const get_all_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const posts = yield initialize_client_1.default.posts.findMany({ orderBy: { Date: 'desc' }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true } } } });
     if (!posts)
         return res.status(400).json({ message: "No Posts!" });
-    console.log(posts);
     return res.status(200).json({ posts: posts });
 });
 exports.get_all_posts = get_all_posts;

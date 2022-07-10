@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const friend_request_controller_1 = require("../controllers/friend-request-controller");
 router.get('/all', friend_request_controller_1.get_all_requests);
-router.post('/:User1Id/:User2Id', friend_request_controller_1.create_request);
+router.get('/:From_Id/:To_Id', friend_request_controller_1.check_request_exists);
+router.post('/:From_Id/:To_Id', friend_request_controller_1.create_request);
 router.delete('/:RequestId', friend_request_controller_1.delete_request);
 exports.default = router;

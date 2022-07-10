@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_request = exports.create_request = exports.get_all_requests = void 0;
+exports.check_request_exists = exports.delete_request = exports.create_request = exports.get_all_requests = void 0;
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
@@ -19,20 +19,20 @@ const get_all_requests = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.get_all_requests = get_all_requests;
 const create_request = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (req.params.User1Id === req.params.User2Id)
+    if (req.params.From_Id === req.params.To_Id)
         return res.status(400).json({ message: "Cannot create a friend request between two of the same user" });
-    const user1Exists = yield prisma.users.findUnique({ where: { Id: req.params.User1Id } });
-    const user2Exists = yield prisma.users.findUnique({ where: { Id: req.params.User2Id } });
+    const user1Exists = yield prisma.users.findUnique({ where: { Id: req.params.From_Id } });
+    const user2Exists = yield prisma.users.findUnique({ where: { Id: req.params.To_Id } });
     if (!user1Exists || !user2Exists)
         return res.status(400).json({ message: "At least one of the users does not exist" });
-    const existingRequest = yield prisma.friend_requests.findFirst({ where: { OR: [{ User1: req.params.User1, User2: req.params.User2 }, { User1: req.params.User2, User2: req.params.User1 }] } });
+    const existingRequest = yield prisma.friend_requests.findFirst({ where: { OR: [{ From_uuid: req.params.From_Id, To_uuid: req.params.To_Id }, { From_uuid: req.params.To_Id, To_uuid: req.params.From_Id }] } });
     if (existingRequest)
         return res.status(400).json({ message: "Request between user already exists" });
     yield prisma.friend_requests.create({
         data: {
             Id: (0, uuid_1.v4)(),
-            User1: req.params.User1Id,
-            User2: req.params.User2Id
+            From_uuid: req.params.From_Id,
+            To_uuid: req.params.To_Id,
         }
     });
     res.status(200).json({ message: "Successfully Created Friend Request" });
@@ -50,4 +50,10 @@ const delete_request = (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.status(200).json({ message: "Successfully Deleted Request" });
 });
 exports.delete_request = delete_request;
-//TO-DO: Get User Requests
+const check_request_exists = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const request = yield prisma.friend_requests.findFirst({ where: { OR: [{ From_uuid: req.params.User1Id, To_uuid: req.params.User2Id }, { From_uuid: req.params.User2Id, To_uuid: req.params.User1Id }] } });
+    if (request)
+        return res.status(200).json({ exists: true });
+    return res.status(200).json({ exists: false });
+});
+exports.check_request_exists = check_request_exists;

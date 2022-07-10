@@ -55,30 +55,31 @@ model Posts {
 }
 
 model Users {
-  Id                                           String            @id @db.VarChar(255)
-  DisplayName                                  String?           @db.VarChar(255)
-  Email                                        String?           @db.VarChar(255)
-  Password                                     String            @db.VarChar(255)
-  ProfileImg                                   String?           @db.VarChar(255)
-  Comments                                     Comments[]
-  Friendships_Friendships_User1ToUsers         Friendships[]     @relation("Friendships_User1ToUsers")
-  Friendships_Friendships_User2ToUsers         Friendships[]     @relation("Friendships_User2ToUsers")
-  Post_Likes                                   Post_Likes[]
-  Posts                                        Posts[]
-  Profile_Info                                 Profile_Info[]
-  friend_requests_UsersTofriend_requests_User1 friend_requests[] @relation("UsersTofriend_requests_User1")
-  friend_requests_UsersTofriend_requests_User2 friend_requests[] @relation("UsersTofriend_requests_User2")
+  Id                                               String            @id @db.VarChar(255)
+  DisplayName                                      String?           @db.VarChar(255)
+  Email                                            String?           @db.VarChar(255)
+  Password                                         String            @db.VarChar(255)
+  ProfileImg                                       String?           @db.VarChar(255)
+  Comments                                         Comments[]
+  Friendships_Friendships_User1ToUsers             Friendships[]     @relation("Friendships_User1ToUsers")
+  Friendships_Friendships_User2ToUsers             Friendships[]     @relation("Friendships_User2ToUsers")
+  Post_Likes                                       Post_Likes[]
+  Posts                                            Posts[]
+  Profile_Info                                     Profile_Info[]
+  friend_requests_UsersTofriend_requests_From_uuid friend_requests[] @relation("UsersTofriend_requests_From_uuid")
+  friend_requests_UsersTofriend_requests_To_uuid   friend_requests[] @relation("UsersTofriend_requests_To_uuid")
 }
 
 model friend_requests {
-  Id                                 String  @id @db.VarChar(255)
-  User1                              String? @db.VarChar(255)
-  User2                              String? @db.VarChar(255)
-  Users_UsersTofriend_requests_User1 Users?  @relation("UsersTofriend_requests_User1", fields: [User1], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User1")
-  Users_UsersTofriend_requests_User2 Users?  @relation("UsersTofriend_requests_User2", fields: [User2], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User2")
+  Id                                     String   @id @db.VarChar(255)
+  From_uuid                              String   @db.VarChar(255)
+  To_uuid                                String   @db.VarChar(255)
+  Is_Accepted                            Boolean? @db.Bit(1)
+  Users_UsersTofriend_requests_From_uuid Users    @relation("UsersTofriend_requests_From_uuid", fields: [From_uuid], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "friend_requests_ibfk_1")
+  Users_UsersTofriend_requests_To_uuid   Users    @relation("UsersTofriend_requests_To_uuid", fields: [To_uuid], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "friend_requests_ibfk_2")
 
-  @@index([User1], map: "FK_User1")
-  @@index([User2], map: "FK_User2")
+  @@index([From_uuid], map: "From_uuid")
+  @@index([To_uuid], map: "To_uuid")
 }
 
 model Profile_Info {
