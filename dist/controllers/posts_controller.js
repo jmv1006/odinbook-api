@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_timeline_posts = exports.create_post = exports.get_all_posts = void 0;
+exports.get_timeline_posts = exports.create_post = exports.get_user_posts = exports.get_all_posts = void 0;
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const initialize_client_1 = __importDefault(require("../config/prisma/initialize-client"));
@@ -24,6 +24,11 @@ const get_all_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     return res.status(200).json({ posts: posts });
 });
 exports.get_all_posts = get_all_posts;
+const get_user_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const posts = yield initialize_client_1.default.posts.findMany({ where: { UserId: req.params.UserId }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
+    return res.status(200).json({ posts: posts });
+});
+exports.get_user_posts = get_user_posts;
 const create_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const schema = joi_1.default.object({
         Text: joi_1.default.string()

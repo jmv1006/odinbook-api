@@ -13,7 +13,6 @@ io.on('connection', (socket) => {
     socket.on('event', (event, userId) => {
         if(user === userId) return console.log('Same User')
         //io.to(user).emit("event", event)
-        console.log(event)
     })
 
     //TO-DO: When a user creates a post, the news feed of their friends page should reflect it...
@@ -26,5 +25,6 @@ io.on('connection', (socket) => {
         friendsIds.forEach((room) => {
             io.sockets.in(room).emit('new-post')
         });
-    })
+    });
+
 })

@@ -19,9 +19,10 @@ const secretString = process.env.FB_SECRET;
 const FacebookStrategy = new passport_facebook_1.Strategy({
     clientID: idString,
     clientSecret: secretString,
-    callbackURL: "http://localhost:7000/auth/log-in/facebook",
+    callbackURL: "http://localhost:7000/auth/log-in/facebook/redirect",
     profileFields: ['id', 'displayName', 'photos', 'email']
 }, (accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('hit facebook');
     const user = yield initialize_client_1.default.users.findUnique({ where: { Id: profile.id } });
     if (!profile)
         return done(null, false);

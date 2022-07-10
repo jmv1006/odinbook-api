@@ -28,7 +28,7 @@ const get_user_friends = (req, res) => __awaiter(void 0, void 0, void 0, functio
     //filters out Ids of friends and into an array
     const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
     //finds friends
-    const friends = yield prisma.users.findMany({ where: { Id: { in: friendsIds } }, select: { Id: true, DisplayName: true, Email: true } });
+    const friends = yield prisma.users.findMany({ where: { Id: { in: friendsIds } }, select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } });
     //adding users friendlist to cache
     yield redis_config_1.default.setEx(`/friends/${req.params.UserId}`, 3600, JSON.stringify(friends));
     res.json({ friends: friends });

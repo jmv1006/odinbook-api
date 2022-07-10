@@ -4,7 +4,8 @@ import passport from 'passport';
 import 'dotenv/config';
 import './config/redis/redis.config';
 
-import './faker';
+//import './seeds';
+import cors from 'cors';
 
 import FacebookStrategy from './config/passport/facebook';
 import LocalStrategy from './config/passport/local';
@@ -21,6 +22,12 @@ import friendshipsRoute from './routes/friendships';
 import helmet from 'helmet';
 
 const app = express();
+
+const options: cors.CorsOptions = {
+  origin: '*'
+};
+
+app.use(cors(options));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -5,8 +5,9 @@ import checkUserExists from '../middleware/auth/check_user_exists';
 import checkUsersCache from '../middleware/cache/checkUsersCache';
 import upload from "../config/multer/multer-config";
 import deleteExistingProfileImg from '../middleware/aws/deletingExistingProfileImg';
+import allUsersCache from '../middleware/cache/allUsersCache';
 
-router.get('/all', get_all_users);
+router.get('/all', allUsersCache, get_all_users);
 
 router.get('/:UserId', checkUserExists, checkUsersCache, get_specific_user)
 

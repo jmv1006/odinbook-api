@@ -18,7 +18,8 @@ const joi_1 = __importDefault(require("joi"));
 const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
 const prisma = new client_1.PrismaClient();
 const get_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const allUsers = yield prisma.users.findMany({ select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } });
+    const allUsers = yield prisma.users.findMany({ select: { Id: true, DisplayName: true, ProfileImg: true } });
+    yield redis_config_1.default.setEx(`/users/all`, 500, JSON.stringify(allUsers));
     res.status(200).json({ users: allUsers });
 });
 exports.get_all_users = get_all_users;
@@ -39,18 +40,25 @@ const edit_user_details = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const { error } = schema.validate(req.body, { abortEarly: false });
     if (error)
         return res.status(400).json({ message: "error updating user details" });
-    yield prisma.users.update({
+    const updatedUser = yield prisma.users.update({
         where: {
             Id: req.params.UserId
         },
         data: {
             Email: req.body.Email,
             DisplayName: req.body.DisplayName
+        },
+        select: {
+            Id: true,
+            DisplayName: true,
+            Email: true,
+            ProfileImg: true
         }
     });
     //deleting existing user details from cache, if they exist
     yield redis_config_1.default.del(`/users/${req.params.UserId}`);
-    res.status(200).json({ message: "Successfully Updated User" });
+    yield redis_config_1.default.del(`/users/all`);
+    res.status(200).json({ updatedUser: updatedUser });
 });
 exports.edit_user_details = edit_user_details;
 const handleProfileImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -58,11 +66,13 @@ const handleProfileImg = (req, res) => __awaiter(void 0, void 0, void 0, functio
         return res.status(400).json({ message: 'No File Sent In Request' });
     const file = req.file;
     yield prisma.users.update({ where: { Id: req.params.UserId }, data: { ProfileImg: file.location } });
+    yield redis_config_1.default.del(`/users/all`);
     return res.status(200).json({ message: 'File Successfully Uploaded' });
 });
 exports.handleProfileImg = handleProfileImg;
 const profileImgDelete = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield prisma.users.update({ where: { Id: req.params.UserId }, data: { ProfileImg: null } });
+    yield redis_config_1.default.del(`/users/all`);
     return res.status(200).json({ message: 'Image Successfully Deleted' });
 });
 exports.profileImgDelete = profileImgDelete;

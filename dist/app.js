@@ -7,7 +7,8 @@ const express_1 = __importDefault(require("express"));
 const passport_1 = __importDefault(require("passport"));
 require("dotenv/config");
 require("./config/redis/redis.config");
-require("./faker");
+//import './seeds';
+const cors_1 = __importDefault(require("cors"));
 const facebook_1 = __importDefault(require("./config/passport/facebook"));
 const local_1 = __importDefault(require("./config/passport/local"));
 const jwt_1 = __importDefault(require("./config/passport/jwt"));
@@ -20,6 +21,10 @@ const friend_requests_1 = __importDefault(require("./routes/friend-requests"));
 const friendships_1 = __importDefault(require("./routes/friendships"));
 const helmet_1 = __importDefault(require("helmet"));
 const app = (0, express_1.default)();
+const options = {
+    origin: '*'
+};
+app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, helmet_1.default)());

@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.check_for_token = exports.log_in_facebook = exports.sign_up = exports.log_in = void 0;
+exports.check_for_token = exports.log_in_facebook_success = exports.sign_up = exports.log_in = void 0;
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const bcryptjs_1 = require("bcryptjs");
 const passport_1 = __importDefault(require("passport"));
 const jsonwebtoken_1 = require("jsonwebtoken");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
+const initialize_client_1 = __importDefault(require("../config/prisma/initialize-client"));
 const log_in = (req, res) => {
     passport_1.default.authenticate('local', { session: false }, (err, user) => {
         if (err) {
@@ -67,11 +67,11 @@ const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(400).json({ message: "Error Signing Up" });
         return;
     }
-    const existingUser = yield prisma.users.findFirst({ where: { Email: req.body.Email } });
+    const existingUser = yield initialize_client_1.default.users.findFirst({ where: { Email: req.body.Email } });
     if (existingUser)
         return res.status(400).json({ message: "User Already Exists" });
     (0, bcryptjs_1.hash)(req.body.Password, 10, (err, hashedPassword) => __awaiter(void 0, void 0, void 0, function* () {
-        yield prisma.users.create({
+        const createdUser = yield initialize_client_1.default.users.create({
             data: {
                 Id: (0, uuid_1.v4)(),
                 DisplayName: req.body.DisplayName,
@@ -79,19 +79,22 @@ const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 Password: hashedPassword
             }
         });
-        return res.status(200).json({ message: "Successfully Created User" });
+        yield initialize_client_1.default.profile_Info.create({
+            data: {
+                Id: (0, uuid_1.v4)(),
+                UserId: createdUser.Id,
+                Bio: ""
+            }
+        });
+        yield redis_config_1.default.del(`/users/all`);
+        return res.status(200).json({ user: createdUser });
     }));
 });
 exports.sign_up = sign_up;
-const log_in_facebook = (req, res) => {
-    passport_1.default.authenticate('facebook', { session: false }, (err, user) => {
-        if (!user) {
-            return res.json("No User");
-        }
-        return res.json(user);
-    })(req, res);
+const log_in_facebook_success = (req, res) => {
+    res.json(req.user);
 };
-exports.log_in_facebook = log_in_facebook;
+exports.log_in_facebook_success = log_in_facebook_success;
 const check_for_token = (req, res) => {
     res.json("Token Here");
 };

@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Comments {
-  Id    String  @id @db.VarChar(255)
-  Text  String? @db.VarChar(500)
-  User  String? @db.VarChar(255)
-  Post  String? @db.VarChar(255)
-  Posts Posts?  @relation(fields: [Post], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CommentPost")
-  Users Users?  @relation(fields: [User], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CommentUser")
+  Id    String    @id @db.VarChar(255)
+  Text  String?   @db.VarChar(500)
+  User  String?   @db.VarChar(255)
+  Post  String?   @db.VarChar(255)
+  Date  DateTime? @db.DateTime(0)
+  Posts Posts?    @relation(fields: [Post], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CommentPost")
+  Users Users?    @relation(fields: [User], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CommentUser")
 
   @@index([Post], map: "FK_CommentPost")
   @@index([User], map: "FK_CommentUser")
@@ -64,6 +65,7 @@ model Users {
   Friendships_Friendships_User2ToUsers         Friendships[]     @relation("Friendships_User2ToUsers")
   Post_Likes                                   Post_Likes[]
   Posts                                        Posts[]
+  Profile_Info                                 Profile_Info[]
   friend_requests_UsersTofriend_requests_User1 friend_requests[] @relation("UsersTofriend_requests_User1")
   friend_requests_UsersTofriend_requests_User2 friend_requests[] @relation("UsersTofriend_requests_User2")
 }
@@ -77,4 +79,13 @@ model friend_requests {
 
   @@index([User1], map: "FK_User1")
   @@index([User2], map: "FK_User2")
+}
+
+model Profile_Info {
+  Id     String  @id @db.VarChar(255)
+  UserId String? @db.VarChar(255)
+  Bio    String? @db.VarChar(500)
+  Users  Users?  @relation(fields: [UserId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_USER")
+
+  @@index([UserId], map: "FK_USER")
 }

@@ -25,7 +25,8 @@ export const create_comment = async (req: Request, res: Response) => {
             Id: v4(),
             Text: req.body.Text,
             User: req.params.UserId,
-            Post: req.params.PostId
+            Post: req.params.PostId,
+            Date: new Date()
         }
     })
 
@@ -33,7 +34,7 @@ export const create_comment = async (req: Request, res: Response) => {
 };
 
 export const get_post_comments = async (req: Request, res: Response) => {
-    const comments = await prisma.comments.findMany({where: {Post: req.params.PostId}})
+    const comments = await prisma.comments.findMany({where: {Post: req.params.PostId}, select: {Id: true, Post: true, Text: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}}}, orderBy: {Date: 'asc'},})
 
     if(!comments) return res.status(400).json({message: "Error finding comments for post"})
 

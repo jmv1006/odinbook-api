@@ -4,9 +4,8 @@ import { v4 } from 'uuid';
 import { hash } from 'bcryptjs';
 import passport from 'passport';
 import { sign } from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import client from '../config/redis/redis.config';
+import prisma from '../config/prisma/initialize-client';
 
 export const log_in = (req: Request, res: Response) => {
     passport.authenticate('local', {session: false}, (err, user) => {
@@ -69,7 +68,7 @@ export const sign_up = async (req: Request, res: Response) => {
 
     
     hash(req.body.Password, 10, async (err, hashedPassword) => {
-        await prisma.users.create({
+        const createdUser = await prisma.users.create({
             data: {
                 Id: v4(),
                 DisplayName: req.body.DisplayName,
@@ -77,17 +76,21 @@ export const sign_up = async (req: Request, res: Response) => {
                 Password: hashedPassword
             }
         })
-        return res.status(200).json({message: "Successfully Created User"})
+
+        await prisma.profile_Info.create({
+            data: {
+                Id: v4(),
+                UserId: createdUser.Id,
+                Bio: ""
+            }
+        })
+        await client.del(`/users/all`);
+        return res.status(200).json({user: createdUser})
     });
 };
 
-export const log_in_facebook = (req: Request, res: Response) => {
-    passport.authenticate('facebook', {session: false}, (err, user) => {
-        if(!user) {
-            return res.json("No User")
-        }
-        return res.json(user)
-    })(req, res)
+export const log_in_facebook_success = (req: Request, res: Response) => {
+    res.json(req.user)
 }
 
 export const check_for_token = (req: Request, res: Response) => {

@@ -24,7 +24,6 @@ server_1.io.on('connection', (socket) => {
         if (user === userId)
             return console.log('Same User');
         //io.to(user).emit("event", event)
-        console.log(event);
     });
     //TO-DO: When a user creates a post, the news feed of their friends page should reflect it...
     socket.on('post', (userId) => __awaiter(void 0, void 0, void 0, function* () {

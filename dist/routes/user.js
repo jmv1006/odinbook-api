@@ -10,7 +10,8 @@ const check_user_exists_1 = __importDefault(require("../middleware/auth/check_us
 const checkUsersCache_1 = __importDefault(require("../middleware/cache/checkUsersCache"));
 const multer_config_1 = __importDefault(require("../config/multer/multer-config"));
 const deletingExistingProfileImg_1 = __importDefault(require("../middleware/aws/deletingExistingProfileImg"));
-router.get('/all', user_controller_1.get_all_users);
+const allUsersCache_1 = __importDefault(require("../middleware/cache/allUsersCache"));
+router.get('/all', allUsersCache_1.default, user_controller_1.get_all_users);
 router.get('/:UserId', check_user_exists_1.default, checkUsersCache_1.default, user_controller_1.get_specific_user);
 router.put('/:UserId', check_user_exists_1.default, user_controller_1.edit_user_details);
 router.post('/:UserId/profile-img', check_user_exists_1.default, multer_config_1.default.single('image'), user_controller_1.handleProfileImg);

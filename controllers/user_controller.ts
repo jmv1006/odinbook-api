@@ -7,7 +7,8 @@ import client from '../config/redis/redis.config';
 const prisma = new PrismaClient();
 
 export const get_all_users = async (req: Request, res: Response) => {
-    const allUsers = await prisma.users.findMany({select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}});
+    const allUsers = await prisma.users.findMany({select: {Id: true, DisplayName: true, ProfileImg: true}});
+    await client.setEx(`/users/all`, 500, JSON.stringify(allUsers));
     res.status(200).json({users: allUsers})
 };
 
@@ -30,20 +31,26 @@ export const edit_user_details = async (req: Request, res: Response) => {
 
     if(error) return res.status(400).json({message: "error updating user details"})
     
-    await prisma.users.update({
+    const updatedUser = await prisma.users.update({
         where: {
             Id: req.params.UserId
         },
         data: {
             Email: req.body.Email,
             DisplayName: req.body.DisplayName
+        },
+        select: {
+            Id: true,
+            DisplayName: true,
+            Email: true,
+            ProfileImg: true
         }
     });
 
     //deleting existing user details from cache, if they exist
     await client.del(`/users/${req.params.UserId}`)
-
-    res.status(200).json({message: "Successfully Updated User"})
+    await client.del(`/users/all`);
+    res.status(200).json({updatedUser: updatedUser})
 };
 
 export const handleProfileImg = async (req: Request, res: Response) => {
@@ -52,10 +59,13 @@ export const handleProfileImg = async (req: Request, res: Response) => {
     const file: any = req.file;
     await prisma.users.update({where: {Id: req.params.UserId}, data: {ProfileImg: file.location}});
     
+    await client.del(`/users/all`);
     return res.status(200).json({message: 'File Successfully Uploaded'})
 };
 
 export const profileImgDelete = async (req: Request, res: Response) => {
     await prisma.users.update({where: {Id: req.params.UserId}, data: {ProfileImg: null}})
+
+    await client.del(`/users/all`);
     return res.status(200).json({message: 'Image Successfully Deleted'})
 };

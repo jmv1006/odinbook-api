@@ -7,9 +7,10 @@ const secretString: string = (process.env.FB_SECRET as string);
 const FacebookStrategy = new Strategy({
     clientID: idString,
     clientSecret: secretString,
-    callbackURL: "http://localhost:7000/auth/log-in/facebook",
+    callbackURL: "http://localhost:7000/auth/log-in/facebook/redirect",
     profileFields: ['id', 'displayName', 'photos', 'email']
-},async (accessToken, refreshToken, profile, done) => {
+}, async (accessToken, refreshToken, profile, done) => {
+    console.log('hit facebook')
     const user = await prisma.users.findUnique({where: {Id: profile.id}});
 
     if(!profile) return done(null, false);

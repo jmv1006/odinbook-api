@@ -35,14 +35,15 @@ const create_comment = (req, res) => __awaiter(void 0, void 0, void 0, function*
             Id: (0, uuid_1.v4)(),
             Text: req.body.Text,
             User: req.params.UserId,
-            Post: req.params.PostId
+            Post: req.params.PostId,
+            Date: new Date()
         }
     });
     res.status(200).json({ message: "Successfully Created Comment" });
 });
 exports.create_comment = create_comment;
 const get_post_comments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const comments = yield prisma.comments.findMany({ where: { Post: req.params.PostId } });
+    const comments = yield prisma.comments.findMany({ where: { Post: req.params.PostId }, select: { Id: true, Post: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'asc' }, });
     if (!comments)
         return res.status(400).json({ message: "Error finding comments for post" });
     return res.status(200).json({ comments: comments, amount: comments.length });

@@ -6,8 +6,12 @@ import prisma from "../config/prisma/initialize-client";
 export const get_all_posts = async (req: Request, res: Response) => {
     const posts = await prisma.posts.findMany({orderBy: {Date: 'desc'}, select: {Id: true, Text: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true}}} });
     if(!posts) return res.status(400).json({message: "No Posts!"})
-    console.log(posts)
     return res.status(200).json({posts:posts})
+};
+
+export const get_user_posts = async (req: Request, res: Response) => {
+    const posts = await prisma.posts.findMany({where: {UserId: req.params.UserId}, select: {Id: true, Text: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}}}, orderBy: {Date: 'desc'}});
+    return res.status(200).json({posts: posts})
 };
 
 export const create_post = async (req: Request, res: Response) => {
