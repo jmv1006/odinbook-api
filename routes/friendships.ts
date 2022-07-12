@@ -11,6 +11,6 @@ router.get('/:UserId', checkUserExists, checkFriendsCache, get_user_friends);
 
 router.post('/:User1Id/:User2Id', create_friends);
 
-router.delete(`/:FriendshipId`, delete_friends)
+router.delete(`/:User1/:User2`, delete_friends);
 
 export default router;

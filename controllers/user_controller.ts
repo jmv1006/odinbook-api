@@ -69,3 +69,27 @@ export const profileImgDelete = async (req: Request, res: Response) => {
     await client.del(`/users/all`);
     return res.status(200).json({message: 'Image Successfully Deleted'})
 };
+
+export const get_profile_info = async (req: Request, res: Response) => {
+    const info = await prisma.profile_Info.findFirst({where: {UserId: req.params.UserId}})
+
+    return res.status(200).json({info: info})
+}
+
+export const update_profile_info = async (req: Request, res: Response) => {
+    const schema = Joi.object({
+        Bio: Joi.string()
+            .max(300)
+            .required()
+    });
+
+    const { error } = schema.validate(req.body, {abortEarly: false});
+
+    if(error) return res.status(400).json({message: "Error updating profile info"})
+
+    const profile = await prisma.profile_Info.findFirst({where: {UserId: req.params.UserId}})
+
+    const updatedProfileInfo = await prisma.profile_Info.update({where: {Id: profile?.Id}, data: {Bio: req.body.Bio}})
+
+    return res.status(200).json({updatedProfileInfo: updatedProfileInfo})
+}

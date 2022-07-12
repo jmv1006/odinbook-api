@@ -57,16 +57,18 @@ const create_friends = (req, res) => __awaiter(void 0, void 0, void 0, function*
     });
     yield redis_config_1.default.del(`/friends/${req.params.User1Id}`);
     yield redis_config_1.default.del(`/friends/${req.params.User2Id}`);
+    const request = yield prisma.friend_requests.findFirst({ where: { OR: [{ From_uuid: req.params.User1Id, To_uuid: req.params.User2Id }, { From_uuid: req.params.User2Id, To_uuid: req.params.User1Id }] } });
+    yield prisma.friend_requests.delete({ where: { Id: request === null || request === void 0 ? void 0 : request.Id } });
     res.status(200).json({ message: "Successfully Created Friendship" });
 });
 exports.create_friends = create_friends;
 const delete_friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const friendshipExists = yield prisma.friendships.findUnique({ where: { Id: req.params.FriendshipId } });
-    if (!friendshipExists)
+    const friendship = yield prisma.friendships.findFirst({ where: { OR: [{ User1: req.params.User1, User2: req.params.User2 }, { User1: req.params.User2, User2: req.params.User1 }] } });
+    if (!friendship)
         return res.status(400).json({ message: "Friendship with given ID does not exist" });
-    yield prisma.friendships.delete({ where: { Id: req.params.FriendshipId } });
-    yield redis_config_1.default.del(`/friends/${friendshipExists.User1}`);
-    yield redis_config_1.default.del(`/friends/${friendshipExists.User2}`);
+    yield redis_config_1.default.del(`/friends/${friendship.User1}`);
+    yield redis_config_1.default.del(`/friends/${friendship.User2}`);
+    yield prisma.friendships.delete({ where: { Id: friendship.Id } });
     res.status(200).json({ message: "Successfully Deleted Friendship" });
 });
 exports.delete_friends = delete_friends;

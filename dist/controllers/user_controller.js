@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.profileImgDelete = exports.handleProfileImg = exports.edit_user_details = exports.get_specific_user = exports.get_all_users = void 0;
+exports.update_profile_info = exports.get_profile_info = exports.profileImgDelete = exports.handleProfileImg = exports.edit_user_details = exports.get_specific_user = exports.get_all_users = void 0;
 const client_1 = require("@prisma/client");
 const joi_1 = __importDefault(require("joi"));
 const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
@@ -76,3 +76,22 @@ const profileImgDelete = (req, res) => __awaiter(void 0, void 0, void 0, functio
     return res.status(200).json({ message: 'Image Successfully Deleted' });
 });
 exports.profileImgDelete = profileImgDelete;
+const get_profile_info = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const info = yield prisma.profile_Info.findFirst({ where: { UserId: req.params.UserId } });
+    return res.status(200).json({ info: info });
+});
+exports.get_profile_info = get_profile_info;
+const update_profile_info = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const schema = joi_1.default.object({
+        Bio: joi_1.default.string()
+            .max(300)
+            .required()
+    });
+    const { error } = schema.validate(req.body, { abortEarly: false });
+    if (error)
+        return res.status(400).json({ message: "Error updating profile info" });
+    const profile = yield prisma.profile_Info.findFirst({ where: { UserId: req.params.UserId } });
+    const updatedProfileInfo = yield prisma.profile_Info.update({ where: { Id: profile === null || profile === void 0 ? void 0 : profile.Id }, data: { Bio: req.body.Bio } });
+    return res.status(200).json({ updatedProfileInfo: updatedProfileInfo });
+});
+exports.update_profile_info = update_profile_info;

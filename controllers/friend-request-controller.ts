@@ -20,15 +20,16 @@ export const create_request = async (req: Request, res: Response) => {
     const existingRequest = await prisma.friend_requests.findFirst({where: {OR: [{From_uuid: req.params.From_Id, To_uuid: req.params.To_Id}, {From_uuid: req.params.To_Id, To_uuid: req.params.From_Id}]}})
     if(existingRequest) return res.status(400).json({message: "Request between user already exists"})
 
-    await prisma.friend_requests.create({
+    const request = await prisma.friend_requests.create({
         data: {
             Id: v4(),
             From_uuid: req.params.From_Id,
             To_uuid: req.params.To_Id,
+            Is_Accepted: false
         }
     });
 
-    res.status(200).json({message: "Successfully Created Friend Request"})
+    res.status(200).json({request: request})
 };
 
 export const delete_request = async (req: Request, res: Response) => {
@@ -46,7 +47,7 @@ export const delete_request = async (req: Request, res: Response) => {
 
 
 export const check_request_exists = async (req: Request, res: Response) => {
-    const request = await prisma.friend_requests.findFirst({where: {OR: [{From_uuid: req.params.User1Id, To_uuid: req.params.User2Id}, {From_uuid: req.params.User2Id, To_uuid: req.params.User1Id}]}})
-    if(request) return res.status(200).json({exists: true})
+    const request = await prisma.friend_requests.findFirst({where: {OR: [{From_uuid: req.params.From_Id, To_uuid: req.params.To_Id}, {From_uuid: req.params.To_Id, To_uuid: req.params.From_Id}]}})
+    if(request) return res.status(200).json({exists: true, request: request})
     return res.status(200).json({exists: false})
 }

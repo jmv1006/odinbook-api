@@ -28,14 +28,15 @@ const create_request = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const existingRequest = yield prisma.friend_requests.findFirst({ where: { OR: [{ From_uuid: req.params.From_Id, To_uuid: req.params.To_Id }, { From_uuid: req.params.To_Id, To_uuid: req.params.From_Id }] } });
     if (existingRequest)
         return res.status(400).json({ message: "Request between user already exists" });
-    yield prisma.friend_requests.create({
+    const request = yield prisma.friend_requests.create({
         data: {
             Id: (0, uuid_1.v4)(),
             From_uuid: req.params.From_Id,
             To_uuid: req.params.To_Id,
+            Is_Accepted: false
         }
     });
-    res.status(200).json({ message: "Successfully Created Friend Request" });
+    res.status(200).json({ request: request });
 });
 exports.create_request = create_request;
 const delete_request = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,9 +52,9 @@ const delete_request = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.delete_request = delete_request;
 const check_request_exists = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const request = yield prisma.friend_requests.findFirst({ where: { OR: [{ From_uuid: req.params.User1Id, To_uuid: req.params.User2Id }, { From_uuid: req.params.User2Id, To_uuid: req.params.User1Id }] } });
+    const request = yield prisma.friend_requests.findFirst({ where: { OR: [{ From_uuid: req.params.From_Id, To_uuid: req.params.To_Id }, { From_uuid: req.params.To_Id, To_uuid: req.params.From_Id }] } });
     if (request)
-        return res.status(200).json({ exists: true });
+        return res.status(200).json({ exists: true, request: request });
     return res.status(200).json({ exists: false });
 });
 exports.check_request_exists = check_request_exists;

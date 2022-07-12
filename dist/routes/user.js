@@ -14,6 +14,8 @@ const allUsersCache_1 = __importDefault(require("../middleware/cache/allUsersCac
 router.get('/all', allUsersCache_1.default, user_controller_1.get_all_users);
 router.get('/:UserId', check_user_exists_1.default, checkUsersCache_1.default, user_controller_1.get_specific_user);
 router.put('/:UserId', check_user_exists_1.default, user_controller_1.edit_user_details);
+router.get('/:UserId/profile', check_user_exists_1.default, user_controller_1.get_profile_info);
+router.put('/:UserId/profile', check_user_exists_1.default, user_controller_1.update_profile_info);
 router.post('/:UserId/profile-img', check_user_exists_1.default, multer_config_1.default.single('image'), user_controller_1.handleProfileImg);
 //PUT profile-img route differs from POST because it DELETES an existing image if it exists...
 router.put('/:UserId/profile-img', check_user_exists_1.default, deletingExistingProfileImg_1.default, multer_config_1.default.single('image'), user_controller_1.handleProfileImg);
