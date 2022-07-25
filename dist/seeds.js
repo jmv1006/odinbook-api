@@ -20,7 +20,7 @@ const randomName = faker_1.faker.name.findName(); // Rowan Nikolaus
 const password = faker_1.faker.word.noun();
 const email = faker_1.faker.word.noun() + faker_1.faker.word.adjective() + "@gmail.com";
 const fakeUsers = [];
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 100; i++) {
     const randomName = faker_1.faker.name.findName(); // Rowan Nikolaus
     const password = faker_1.faker.word.noun() + faker_1.faker.word.adjective();
     const email = faker_1.faker.word.noun() + faker_1.faker.word.adjective() + "@gmail.com";
@@ -31,15 +31,26 @@ for (let i = 0; i < 20; i++) {
     };
     fakeUsers.push(fakeUser);
 }
-fakeUsers.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
-    yield initialize_client_1.default.users.create({
+const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const createdUser = yield initialize_client_1.default.users.create({
         data: {
             Id: (0, uuid_1.v4)(),
-            Email: user.Email,
             DisplayName: user.DisplayName,
+            Email: user.Email,
+            ProfileImg: "https://i.stack.imgur.com/l60Hf.png",
             Password: user.Password
         }
     });
-    console.log('done');
+    yield initialize_client_1.default.profile_Info.create({
+        data: {
+            Id: (0, uuid_1.v4)(),
+            UserId: createdUser.Id,
+            Bio: ""
+        }
+    });
+});
+fakeUsers.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
+    //createUser(user)
 }));
-redis_config_1.default.del('/users/all');
+redis_config_1.default.del(`/users/all`);
+console.log('done');

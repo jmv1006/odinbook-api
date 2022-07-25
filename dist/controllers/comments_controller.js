@@ -21,7 +21,7 @@ const create_comment = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const schema = joi_1.default.object({
         Text: joi_1.default.string()
             .min(1)
-            .max(500)
+            .max(1000)
             .required(),
     });
     const { error } = schema.validate(req.body, { abortEarly: false });

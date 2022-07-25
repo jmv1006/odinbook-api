@@ -15,7 +15,7 @@ interface IUser {
     Password: string
 }
 
-for(let i  = 0; i < 20; i++) {
+for(let i  = 0; i < 100; i++) {
     const randomName = faker.name.findName();  // Rowan Nikolaus
     const password = faker.word.noun() + faker.word.adjective();
     const email = faker.word.noun() + faker.word.adjective() + "@gmail.com";
@@ -28,17 +28,29 @@ for(let i  = 0; i < 20; i++) {
     fakeUsers.push(fakeUser)
 }   
 
-fakeUsers.forEach(async (user: IUser) => {
-    await prisma.users.create({
+const createUser = async (user: IUser) => {
+    const createdUser = await prisma.users.create({
         data: {
             Id: v4(),
-            Email: user.Email,
             DisplayName: user.DisplayName,
+            Email: user.Email,
+            ProfileImg: "https://i.stack.imgur.com/l60Hf.png",
             Password: user.Password
         }
-    })
+    });
 
-    console.log('done')
-})
+    await prisma.profile_Info.create({
+        data: {
+            Id: v4(),
+            UserId: createdUser.Id,
+            Bio: ""
+        }
+    });
+};
 
-client.del('/users/all')
+fakeUsers.forEach(async (user: IUser) => {
+   //createUser(user)
+});
+
+client.del(`/users/all`);
+console.log('done')

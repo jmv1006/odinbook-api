@@ -34,4 +34,8 @@ server_1.io.on('connection', (socket) => {
             server_1.io.sockets.in(room).emit('new-post');
         });
     }));
+    socket.on('notification', (userId, type, entityId) => __awaiter(void 0, void 0, void 0, function* () {
+        //when a notification is triggered, send it to the target User Id with the type
+        server_1.io.sockets.in(userId).emit('notification', { type: type, entityId: entityId });
+    }));
 });

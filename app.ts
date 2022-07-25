@@ -1,6 +1,7 @@
 import  {Request, Response} from 'express';
 import express from "express";
 import passport from 'passport';
+import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import './config/redis/redis.config';
 
@@ -31,23 +32,24 @@ app.use(cors(options));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
 app.use(helmet());
 
-passport.use(FacebookStrategy);
+//passport.use(FacebookStrategy);
 passport.use(LocalStrategy);
 passport.use(JWTStrategy);
 passport.initialize();
 
 app.use('/auth', authRoute);
-app.use('/posts', postsRoute);
-app.use('/likes', likesRoute);
-app.use('/comments', commentsRoute);
-app.use('/users', userRoute);
-app.use('/friend-requests', friendRequestsRoute);
-app.use('/friendships', friendshipsRoute);
+app.use('/posts', passport.authenticate('jwt', {session: false}), postsRoute);
+app.use('/likes', passport.authenticate('jwt', {session: false}), likesRoute);
+app.use('/comments', passport.authenticate('jwt', {session: false}), commentsRoute);
+app.use('/users', passport.authenticate('jwt', {session: false}), userRoute);
+app.use('/friend-requests', passport.authenticate('jwt', {session: false}), friendRequestsRoute);
+app.use('/friendships', passport.authenticate('jwt', {session: false}), friendshipsRoute);
 
 app.get('/', (req: Request, res: Response) => {
-    res.json("Hello From API!")
+    res.json({message: "Hello From API!"})
 });
 
 export default app;

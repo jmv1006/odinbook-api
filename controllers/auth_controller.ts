@@ -73,6 +73,7 @@ export const sign_up = async (req: Request, res: Response) => {
                 Id: v4(),
                 DisplayName: req.body.DisplayName,
                 Email: req.body.Email,
+                ProfileImg: "https://i.stack.imgur.com/l60Hf.png",
                 Password: hashedPassword
             }
         })
@@ -85,7 +86,19 @@ export const sign_up = async (req: Request, res: Response) => {
             }
         })
         await client.del(`/users/all`);
-        return res.status(200).json({user: createdUser})
+
+        const tokenUser: any = {
+            Id: createdUser.Id,
+            DisplayName: createdUser.DisplayName,
+            Email: createdUser.Email,
+            ProfileImg: createdUser.ProfileImg
+        }
+        
+        const tokenSecret: any = process.env.TOKEN_SECRET;
+        
+        const token = sign({user: tokenUser}, tokenSecret, {expiresIn: '15m'})
+
+        return res.status(200).cookie("token", token).json({user: createdUser})
     });
 };
 
@@ -94,5 +107,7 @@ export const log_in_facebook_success = (req: Request, res: Response) => {
 }
 
 export const check_for_token = (req: Request, res: Response) => {
-    res.json("Token Here")
-}
+    if(req.user){
+        res.status(200).json({user: req.user})
+    }
+};

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.check_request_exists = exports.delete_request = exports.create_request = exports.get_all_requests = void 0;
+exports.get_all_user_requests = exports.get_user_sent_requests = exports.get_user_recieved_requests = exports.check_request_exists = exports.delete_request = exports.create_request = exports.get_all_requests = void 0;
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
@@ -58,3 +58,18 @@ const check_request_exists = (req, res) => __awaiter(void 0, void 0, void 0, fun
     return res.status(200).json({ exists: false });
 });
 exports.check_request_exists = check_request_exists;
+const get_user_recieved_requests = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const requests = yield prisma.friend_requests.findMany({ where: { To_uuid: req.params.UserId }, include: { Users_UsersTofriend_requests_From_uuid: { select: { Id: true, Email: true, ProfileImg: true, DisplayName: true } } } });
+    return res.status(200).json({ requests: requests });
+});
+exports.get_user_recieved_requests = get_user_recieved_requests;
+const get_user_sent_requests = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const requests = yield prisma.friend_requests.findMany({ where: { From_uuid: req.params.UserId }, include: { Users_UsersTofriend_requests_To_uuid: { select: { Id: true, Email: true, ProfileImg: true, DisplayName: true } } } });
+    return res.status(200).json({ requests: requests });
+});
+exports.get_user_sent_requests = get_user_sent_requests;
+const get_all_user_requests = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const requests = yield prisma.friend_requests.findMany({ where: { OR: [{ To_uuid: req.params.UserId }, { From_uuid: req.params.UserId }] } });
+    return res.status(200).json({ requests: requests });
+});
+exports.get_all_user_requests = get_all_user_requests;

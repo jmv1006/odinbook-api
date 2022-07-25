@@ -57,10 +57,11 @@ export const handleProfileImg = async (req: Request, res: Response) => {
     if(!req.file) return res.status(400).json({message: 'No File Sent In Request'});
     
     const file: any = req.file;
-    await prisma.users.update({where: {Id: req.params.UserId}, data: {ProfileImg: file.location}});
+    const updatedUser = await prisma.users.update({where: {Id: req.params.UserId}, data: {ProfileImg: file.location}});
     
     await client.del(`/users/all`);
-    return res.status(200).json({message: 'File Successfully Uploaded'})
+    await client.del(`/users/${updatedUser.Id}`);
+    return res.status(200).json({updatedUser: updatedUser})
 };
 
 export const profileImgDelete = async (req: Request, res: Response) => {

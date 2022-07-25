@@ -25,7 +25,7 @@ const opts = {
     secretOrKey: process.env.TOKEN_SECRET
 };
 const strategy = new passport_jwt_1.Strategy(opts, (payload, done) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield prisma.users.findUnique({ where: { Id: payload.user.Id } });
+    const user = yield prisma.users.findUnique({ where: { Id: payload.user.Id }, select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } });
     if (!user)
         return done(null, false);
     return done(null, user);

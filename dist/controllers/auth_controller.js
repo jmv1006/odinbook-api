@@ -76,6 +76,7 @@ const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 Id: (0, uuid_1.v4)(),
                 DisplayName: req.body.DisplayName,
                 Email: req.body.Email,
+                ProfileImg: "https://i.stack.imgur.com/l60Hf.png",
                 Password: hashedPassword
             }
         });
@@ -87,7 +88,15 @@ const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
         });
         yield redis_config_1.default.del(`/users/all`);
-        return res.status(200).json({ user: createdUser });
+        const tokenUser = {
+            Id: createdUser.Id,
+            DisplayName: createdUser.DisplayName,
+            Email: createdUser.Email,
+            ProfileImg: createdUser.ProfileImg
+        };
+        const tokenSecret = process.env.TOKEN_SECRET;
+        const token = (0, jsonwebtoken_1.sign)({ user: tokenUser }, tokenSecret, { expiresIn: '15m' });
+        return res.status(200).cookie("token", token).json({ user: createdUser });
     }));
 });
 exports.sign_up = sign_up;
@@ -96,6 +105,8 @@ const log_in_facebook_success = (req, res) => {
 };
 exports.log_in_facebook_success = log_in_facebook_success;
 const check_for_token = (req, res) => {
-    res.json("Token Here");
+    if (req.user) {
+        res.status(200).json({ user: req.user });
+    }
 };
 exports.check_for_token = check_for_token;

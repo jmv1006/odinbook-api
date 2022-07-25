@@ -27,13 +27,10 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('notification', async (userId: string, type: string) => {
-        const friendships = await prisma.friendships.findMany({where: {OR: [{User1: userId}, {User2: userId}]}})
-        const friendsIds: Array<any> = friendships.map(friendship => friendship.User1 === userId ? friendship.User2 : friendship.User1);
+    socket.on('notification', async (userId: string, type: string, entityId: string) => {
 
-        friendsIds.forEach((room) => {
-            io.sockets.in(room).emit('notification', {type: type, userId: userId})
-        });
+        //when a notification is triggered, send it to the target User Id with the type
+        io.sockets.in(userId).emit('notification', {type: type, entityId: entityId})
     })
 
 })

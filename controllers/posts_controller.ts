@@ -18,6 +18,7 @@ export const create_post = async (req: Request, res: Response) => {
     const schema = Joi.object({
         Text: Joi.string()
             .min(1)
+            .max(5000)
             .required(),
     });
 
@@ -47,4 +48,21 @@ export const get_timeline_posts = async (req: Request, res: Response) => {
 
     const postsI = await prisma.posts.findMany({where: {OR: [{UserId: req.params.UserId}, {UserId: {in: friendsIds}}]}, select: {Id: true, Text: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}}}, orderBy: {Date: 'desc'}});
     res.status(200).json({posts: postsI})
+};
+
+export const delete_post = async (req: Request, res: Response) => {
+    await prisma.posts.delete({where: {Id: req.params.PostId}})
+    res.status(200).json({message: "Successfully Deleted Post"})
 }
+export const get_pagninated_posts = async (req: Request, res: Response) => {
+
+    const pageNumber = Number(req.params.PageNumber)
+    //finds frienships where user is a member
+    const friendships = await prisma.friendships.findMany({where: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}})
+
+    //filters out Ids of friends and into an array
+    const friendsIds: Array<any>  = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1)
+
+    const posts = await prisma.posts.findMany({skip: pageNumber, take: 10, where: {OR: [{UserId: req.params.UserId}, {UserId: {in: friendsIds}}]}, select: {Id: true, Text: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}}}, orderBy: {Date: 'desc'}});
+    res.status(200).json({posts: posts})
+};

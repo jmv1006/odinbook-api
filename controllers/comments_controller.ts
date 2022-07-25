@@ -9,7 +9,7 @@ export const create_comment = async (req: Request, res: Response) => {
     const schema = Joi.object({
         Text: Joi.string()
             .min(1)
-            .max(500)
+            .max(1000)
             .required(),
     });
 

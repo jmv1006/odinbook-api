@@ -65,9 +65,10 @@ const handleProfileImg = (req, res) => __awaiter(void 0, void 0, void 0, functio
     if (!req.file)
         return res.status(400).json({ message: 'No File Sent In Request' });
     const file = req.file;
-    yield prisma.users.update({ where: { Id: req.params.UserId }, data: { ProfileImg: file.location } });
+    const updatedUser = yield prisma.users.update({ where: { Id: req.params.UserId }, data: { ProfileImg: file.location } });
     yield redis_config_1.default.del(`/users/all`);
-    return res.status(200).json({ message: 'File Successfully Uploaded' });
+    yield redis_config_1.default.del(`/users/${updatedUser.Id}`);
+    return res.status(200).json({ updatedUser: updatedUser });
 });
 exports.handleProfileImg = handleProfileImg;
 const profileImgDelete = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

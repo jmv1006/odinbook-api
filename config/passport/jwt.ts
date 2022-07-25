@@ -19,7 +19,7 @@ const opts = {
 };
 
 const strategy = new Strategy(opts, async (payload, done) => {
-    const user = await prisma.users.findUnique({where: {Id: payload.user.Id}});
+    const user = await prisma.users.findUnique({where: {Id: payload.user.Id}, select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}});
 
     if(!user) return done(null, false)
 

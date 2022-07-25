@@ -86,7 +86,7 @@ model Profile_Info {
   Id     String  @id @db.VarChar(255)
   UserId String? @db.VarChar(255)
   Bio    String? @db.VarChar(500)
-  Users  Users?  @relation(fields: [UserId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_USER")
+  Users  Users?  @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "Profile_Info_ibfk_1")
 
-  @@index([UserId], map: "FK_USER")
+  @@index([UserId], map: "UserId")
 }

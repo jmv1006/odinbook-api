@@ -3,13 +3,16 @@ import {Request} from 'express'
 import multerS3 from 'multer-s3';
 import s3 from "../aws/aws.config";
 import path from "path";
+import sharp from 'sharp';
 
 const upload = multer({
     fileFilter(req: Request, file: any, done) {
+
         const ext = path.extname(file.originalname);
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
             return done(null, false)
         }
+
         done(null, file)
     },
     storage: multerS3({
