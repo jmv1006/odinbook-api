@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_pagninated_posts = exports.delete_post = exports.get_timeline_posts = exports.create_post = exports.get_user_posts = exports.get_all_posts = void 0;
+exports.get_pagninated_posts = exports.edit_post = exports.delete_post = exports.get_timeline_posts = exports.create_post = exports.get_user_posts = exports.get_all_posts = void 0;
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const initialize_client_1 = __importDefault(require("../config/prisma/initialize-client"));
@@ -63,6 +63,25 @@ const delete_post = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.status(200).json({ message: "Successfully Deleted Post" });
 });
 exports.delete_post = delete_post;
+const edit_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const schema = joi_1.default.object({
+        Text: joi_1.default.string()
+            .min(1)
+            .max(5000)
+            .required(),
+    });
+    const { error } = schema.validate(req.body, { abortEarly: false });
+    if (error)
+        return res.status(400).json({ message: "Error Creating Post" });
+    try {
+        const updatedPost = yield initialize_client_1.default.posts.update({ where: { Id: req.params.PostId }, data: { Text: req.body.Text } });
+        return res.status(200).json({ updatedPost: updatedPost });
+    }
+    catch (error) {
+        return res.status(500).json({ message: "Error Updating Post" });
+    }
+});
+exports.edit_post = edit_post;
 const get_pagninated_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const pageNumber = Number(req.params.PageNumber);
     //finds frienships where user is a member

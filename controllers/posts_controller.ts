@@ -53,7 +53,28 @@ export const get_timeline_posts = async (req: Request, res: Response) => {
 export const delete_post = async (req: Request, res: Response) => {
     await prisma.posts.delete({where: {Id: req.params.PostId}})
     res.status(200).json({message: "Successfully Deleted Post"})
-}
+};
+
+export const edit_post = async (req: Request, res: Response) => {
+    const schema = Joi.object({
+        Text: Joi.string()
+            .min(1)
+            .max(5000)
+            .required(),
+    });
+
+    const { error } = schema.validate(req.body, {abortEarly: false})
+
+    if(error) return res.status(400).json({message: "Error Creating Post"});
+
+    try {
+        const updatedPost = await prisma.posts.update({where: {Id: req.params.PostId}, data: {Text: req.body.Text}});
+        return res.status(200).json({updatedPost: updatedPost});
+    } catch(error: any) {
+        return res.status(500).json({message: "Error Updating Post"})
+    }
+};
+
 export const get_pagninated_posts = async (req: Request, res: Response) => {
 
     const pageNumber = Number(req.params.PageNumber)

@@ -14,4 +14,5 @@ router.get('/:UserId', check_user_exists_1.default, posts_controller_1.get_user_
 router.get('/:UserId/timeline', check_user_exists_1.default, posts_controller_1.get_timeline_posts);
 router.get('/:UserId/timeline/paginated/:PageNumber', check_user_exists_1.default, posts_controller_1.get_pagninated_posts);
 router.delete('/:PostId', check_post_exists_1.default, posts_controller_1.delete_post);
+router.put('/:PostId', check_post_exists_1.default, posts_controller_1.edit_post);
 exports.default = router;
