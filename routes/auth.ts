@@ -14,4 +14,5 @@ router.get('/log-in/facebook/redirect', passport.authenticate('facebook', {sessi
 
 router.get('/token', passport.authenticate('jwt', {session: false}), check_for_token)
 
+
 export default router;

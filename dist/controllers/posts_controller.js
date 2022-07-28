@@ -60,7 +60,7 @@ const get_timeline_posts = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.get_timeline_posts = get_timeline_posts;
 const delete_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield initialize_client_1.default.posts.delete({ where: { Id: req.params.PostId } });
-    res.status(200).json({ message: "Successfully Deleted Post" });
+    return res.status(200).json({ message: "Successfully Deleted Post" });
 });
 exports.delete_post = delete_post;
 const edit_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,12 +83,21 @@ const edit_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.edit_post = edit_post;
 const get_pagninated_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pageNumber = Number(req.params.PageNumber);
-    //finds frienships where user is a member
-    const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
-    //filters out Ids of friends and into an array
-    const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
-    const posts = yield initialize_client_1.default.posts.findMany({ skip: pageNumber, take: 10, where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
-    res.status(200).json({ posts: posts });
+    if (!req.query.page || !req.query.limit)
+        return res.status(400).json({ message: 'Invalid Query' });
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const endIndex = page * limit;
+    try {
+        //finds frienships where user is a member
+        const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
+        //filters out Ids of friends and into an array
+        const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
+        const posts = yield initialize_client_1.default.posts.findMany({ take: limit, skip: endIndex, where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
+        res.status(200).json({ posts: posts });
+    }
+    catch (error) {
+        return res.status(500).json({ message: "Server Error" });
+    }
 });
 exports.get_pagninated_posts = get_pagninated_posts;

@@ -3,9 +3,8 @@ import {Request} from 'express'
 import multerS3 from 'multer-s3';
 import s3 from "../aws/aws.config";
 import path from "path";
-import sharp from 'sharp';
 
-const upload = multer({
+const uploadProfileImage = multer({
     fileFilter(req: Request, file: any, done) {
 
         const ext = path.extname(file.originalname);
@@ -25,4 +24,22 @@ const upload = multer({
     })
 });
 
-export default upload;
+const uploadPostImage = multer({
+    fileFilter(req: Request, file: any, done) {
+        const ext = path.extname(file.originalname);
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return done(null, false)
+        }
+        done(null, file)
+    },
+    storage: multerS3({
+        s3: s3,
+        bucket: 'odinbook-jmv1006',
+        key: function (req: Request, file, done) {
+            const ext: string = path.extname(file.originalname);
+            done(null, 'postImg' + ext);
+        }
+    })
+});
+
+export {uploadProfileImage};
