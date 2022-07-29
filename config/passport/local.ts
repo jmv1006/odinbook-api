@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const LocalStrategy = new Strategy({usernameField: "Email", passwordField: "Password"}, async (Email, Password, done) => {
     const user = await prisma.users.findFirst({where: {Email: Email}})
 
-    if(!user) return done(null, false, { message: "Incorrect Username" });
+    if(!user) return done(null, false, { message: "User Not Found" });
 
     if(user) {
         compare(Password, user.Password, (err, res) => {

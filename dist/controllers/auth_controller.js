@@ -21,12 +21,12 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
 const initialize_client_1 = __importDefault(require("../config/prisma/initialize-client"));
 const log_in = (req, res) => {
-    passport_1.default.authenticate('local', { session: false }, (err, user) => {
+    passport_1.default.authenticate('local', { session: false }, (err, user, info) => {
         if (err) {
             return res.status(500).json('Server Error');
         }
         if (!user) {
-            return res.status(400).json("Error Signing In");
+            return res.status(400).json({ message: info.message });
         }
         const tokenUser = {
             Id: user.Id,

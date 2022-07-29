@@ -5,10 +5,9 @@ import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import './config/redis/redis.config';
 
-//import './seeds';
 import cors from 'cors';
 
-import FacebookStrategy from './config/passport/facebook';
+//import FacebookStrategy from './config/passport/facebook';
 import LocalStrategy from './config/passport/local';
 import JWTStrategy from './config/passport/jwt';
 
@@ -35,7 +34,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(helmet());
 
-//passport.use(FacebookStrategy);
 passport.use(LocalStrategy);
 passport.use(JWTStrategy);
 passport.initialize();

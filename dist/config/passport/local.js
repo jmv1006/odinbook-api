@@ -16,7 +16,7 @@ const prisma = new client_1.PrismaClient();
 const LocalStrategy = new passport_local_1.Strategy({ usernameField: "Email", passwordField: "Password" }, (Email, Password, done) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield prisma.users.findFirst({ where: { Email: Email } });
     if (!user)
-        return done(null, false, { message: "Incorrect Username" });
+        return done(null, false, { message: "User Not Found" });
     if (user) {
         (0, bcryptjs_1.compare)(Password, user.Password, (err, res) => {
             if (res) {

@@ -8,13 +8,13 @@ import client from '../config/redis/redis.config';
 import prisma from '../config/prisma/initialize-client';
 
 export const log_in = (req: Request, res: Response) => {
-    passport.authenticate('local', {session: false}, (err, user) => {
+    passport.authenticate('local', {session: false}, (err, user, info) => {
         if(err) {
             return res.status(500).json('Server Error')
         }
 
         if(!user) {
-            return res.status(400).json("Error Signing In")
+            return res.status(400).json({message: info.message})
         }
         
         const tokenUser: any = {

@@ -6,7 +6,6 @@ import path from "path";
 
 const uploadProfileImage = multer({
     fileFilter(req: Request, file: any, done) {
-
         const ext = path.extname(file.originalname);
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
             return done(null, false)

@@ -31,6 +31,6 @@ io.on('connection', (socket) => {
 
         //when a notification is triggered, send it to the target User Id with the type
         io.sockets.in(userId).emit('notification', {type: type, entityId: entityId})
-    })
+    });
 
 })

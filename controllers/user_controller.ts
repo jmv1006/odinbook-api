@@ -1,6 +1,5 @@
 import {Request, Response} from 'express';
 import { PrismaClient } from '@prisma/client';
-import { v4 } from 'uuid';
 import Joi from 'joi';
 import client from '../config/redis/redis.config';
 
@@ -61,6 +60,7 @@ export const handleProfileImg = async (req: Request, res: Response) => {
     
     await client.del(`/users/all`);
     await client.del(`/users/${updatedUser.Id}`);
+
     return res.status(200).json({updatedUser: updatedUser})
 };
 
