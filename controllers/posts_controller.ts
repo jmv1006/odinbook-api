@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import Joi from "joi";
 import { v4 } from "uuid";
 import prisma from "../config/prisma/initialize-client";
-import client from '../config/redis/redis.config';
 
 export const get_all_posts = async (req: Request, res: Response) => {
     const posts = await prisma.posts.findMany({orderBy: {Date: 'desc'}, select: {Id: true, Text: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true}}} });

@@ -2,8 +2,8 @@ import  {Request, Response} from 'express';
 import express from "express";
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
+import { connectToRedis } from './config/redis/redis.config';
 import 'dotenv/config';
-import './config/redis/redis.config';
 
 import cors from 'cors';
 
@@ -34,20 +34,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(helmet());
 
+const redisConnect = async() => {
+  await connectToRedis()
+}
+
+redisConnect()
+
 passport.use(LocalStrategy);
 passport.use(JWTStrategy);
 passport.initialize();
+
+app.get('/', (req: Request, res: Response) => {
+  res.json({message: "Hello From API!"})
+});
 
 app.use('/auth', authRoute);
 app.use('/posts', passport.authenticate('jwt', {session: false}), postsRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likesRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}), commentsRoute);
-app.use('/users', passport.authenticate('jwt', {session: false}), userRoute);
+app.use('/users', userRoute);
 app.use('/friend-requests', passport.authenticate('jwt', {session: false}), friendRequestsRoute);
-app.use('/friendships', passport.authenticate('jwt', {session: false}), friendshipsRoute);
+app.use('/friendships', friendshipsRoute);
 
-app.get('/', (req: Request, res: Response) => {
-    res.json({message: "Hello From API!"})
-});
 
 export default app;

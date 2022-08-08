@@ -1,9 +1,10 @@
 import {Request, Response} from 'express';
-import { PrismaClient } from '@prisma/client';
 import { v4 } from 'uuid';
-import client from '../config/redis/redis.config';
+import { getClient } from '../config/redis/redis.config';
+import prisma from '../config/prisma/initialize-client';
 
-const prisma = new PrismaClient();
+const client = getClient();
+
 
 export const get_all_friendships = async (req: Request, res: Response) => {
     const friendships = await prisma.friendships.findMany();
@@ -70,3 +71,38 @@ export const delete_friends = async (req: Request, res: Response) => {
 
     res.status(200).json({message: "Successfully Deleted Friendship"})
 };
+
+export const get_suggested_friends = async  (req: Request, res: Response) => {
+    //get suggested friends: how?
+
+    const adjancency_list: any = {};
+
+    //for each of user friends, create a graph node
+    const friendships = await prisma.friendships.findMany({where: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}})
+
+    //filters out Ids of friends and into an array
+    const friendsIds: Array<any>  = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1)
+
+    adjancency_list[req.params.UserId] = [];
+
+    friendsIds.forEach(id => {
+        adjancency_list[req.params.UserId].push(id)
+    })
+
+    friendsIds.forEach(id => {
+        adjancency_list[id] = []
+        adjancency_list[id].push(req.params.UserId)
+
+        //add all this users friends
+        prisma.friendships.findMany({where: {OR: [{User1: id}, {User2: req.params.id}]}}).then(res => {
+            console.log(res)
+        })
+
+    })
+
+    //at this point, all of the users friends are in the graph
+    console.log(adjancency_list)
+
+    res.send("here")
+};
+

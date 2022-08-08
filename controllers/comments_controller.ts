@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { v4 } from "uuid";
 import Joi from "joi";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../config/prisma/initialize-client";
 
 export const create_comment = async (req: Request, res: Response) => {
     const schema = Joi.object({
@@ -41,3 +39,12 @@ export const get_post_comments = async (req: Request, res: Response) => {
     return res.status(200).json({comments: comments, amount: comments.length})
 }
 
+export const delete_comment = async (req: Request, res: Response) => {
+    const comment = await prisma.comments.findUnique({where: {Id: req.params.CommentId}});
+
+    if (!comment) return res.status(400).json({message: 'Comment Does Not Exist'})
+
+    await prisma.comments.delete({where: {Id: comment.Id}});
+
+    return res.status(200).json({message: "Comment Successfully Deleted"})
+}

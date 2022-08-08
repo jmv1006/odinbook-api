@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const faker_1 = require("@faker-js/faker");
 const initialize_client_1 = __importDefault(require("./config/prisma/initialize-client"));
 const uuid_1 = require("uuid");
-const redis_config_1 = __importDefault(require("./config/redis/redis.config"));
 const randomName = faker_1.faker.name.findName(); // Rowan Nikolaus
 const password = faker_1.faker.word.noun();
 const email = faker_1.faker.word.noun() + faker_1.faker.word.adjective() + "@gmail.com";
@@ -52,5 +51,4 @@ const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
 fakeUsers.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
     //createUser(user)
 }));
-redis_config_1.default.del(`/users/all`);
 console.log('done');

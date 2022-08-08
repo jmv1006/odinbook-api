@@ -1,9 +1,9 @@
 import {Request, Response} from 'express';
-import { PrismaClient } from '@prisma/client';
 import Joi from 'joi';
-import client from '../config/redis/redis.config';
+import { getClient } from '../config/redis/redis.config';
+import prisma from '../config/prisma/initialize-client';
 
-const prisma = new PrismaClient();
+const client = getClient()
 
 export const get_all_users = async (req: Request, res: Response) => {
     const allUsers = await prisma.users.findMany({select: {Id: true, DisplayName: true, ProfileImg: true}});

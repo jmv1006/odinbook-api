@@ -10,6 +10,7 @@ const checkFriendsCache_1 = __importDefault(require("../middleware/cache/checkFr
 const friendships_controller_1 = require("../controllers/friendships_controller");
 router.get('/all', friendships_controller_1.get_all_friendships);
 router.get('/:UserId', check_user_exists_1.default, checkFriendsCache_1.default, friendships_controller_1.get_user_friends);
+router.get('/:UserId/suggested', check_user_exists_1.default, friendships_controller_1.get_suggested_friends);
 router.post('/:User1Id/:User2Id', friendships_controller_1.create_friends);
 router.delete(`/:User1/:User2`, friendships_controller_1.delete_friends);
 exports.default = router;

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import prisma from './config/prisma/initialize-client';
 import { v4 } from 'uuid';
-import client from './config/redis/redis.config';
+
 
 const randomName = faker.name.findName();  // Rowan Nikolaus
 const password = faker.word.noun();
@@ -52,5 +52,4 @@ fakeUsers.forEach(async (user: IUser) => {
    //createUser(user)
 });
 
-client.del(`/users/all`);
 console.log('done')

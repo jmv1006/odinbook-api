@@ -18,8 +18,9 @@ const uuid_1 = require("uuid");
 const bcryptjs_1 = require("bcryptjs");
 const passport_1 = __importDefault(require("passport"));
 const jsonwebtoken_1 = require("jsonwebtoken");
-const redis_config_1 = __importDefault(require("../config/redis/redis.config"));
+const redis_config_1 = require("../config/redis/redis.config");
 const initialize_client_1 = __importDefault(require("../config/prisma/initialize-client"));
+const client = (0, redis_config_1.getClient)();
 const log_in = (req, res) => {
     passport_1.default.authenticate('local', { session: false }, (err, user, info) => {
         if (err) {
@@ -87,7 +88,7 @@ const sign_up = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 Bio: ""
             }
         });
-        yield redis_config_1.default.del(`/users/all`);
+        yield client.del(`/users/all`);
         const tokenUser = {
             Id: createdUser.Id,
             DisplayName: createdUser.DisplayName,

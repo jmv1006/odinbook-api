@@ -4,8 +4,10 @@ import { v4 } from 'uuid';
 import { hash } from 'bcryptjs';
 import passport from 'passport';
 import { sign } from 'jsonwebtoken';
-import client from '../config/redis/redis.config';
+import { getClient } from '../config/redis/redis.config';
 import prisma from '../config/prisma/initialize-client';
+
+const client = getClient();
 
 export const log_in = (req: Request, res: Response) => {
     passport.authenticate('local', {session: false}, (err, user, info) => {

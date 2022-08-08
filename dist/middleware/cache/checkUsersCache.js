@@ -8,13 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const redis_config_1 = __importDefault(require("../../config/redis/redis.config"));
+const redis_config_1 = require("../../config/redis/redis.config");
+const client = (0, redis_config_1.getClient)();
 const checkUsersCache = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield redis_config_1.default.get(`/users/${req.params.UserId}`);
+    const user = yield client.get(`/users/${req.params.UserId}`);
     if (!user) {
         return next();
     }

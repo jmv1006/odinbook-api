@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import client from '../../config/redis/redis.config'
+import {getClient} from '../../config/redis/redis.config'
+
+const client = getClient();
 
 const allUsersCache = async (req: Request, res: Response, next: NextFunction) => {
     const users = await client.get(`/users/all`);
