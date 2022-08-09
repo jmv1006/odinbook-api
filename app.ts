@@ -3,7 +3,9 @@ import express from "express";
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import { connectToRedis } from './config/redis/redis.config';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+
+dotenv.config({path: `.env.development`})
 
 import cors from 'cors';
 

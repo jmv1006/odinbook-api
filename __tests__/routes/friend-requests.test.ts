@@ -1,6 +1,9 @@
 import request from 'supertest';
 import express from 'express'
 import FriendsRequestsRouter from '../../routes/friend-requests';
+import * as dotenv from 'dotenv';
+
+dotenv.config({path: `.env.test`})
 
 const app = express()
 app.use(express.urlencoded({ extended: false }));

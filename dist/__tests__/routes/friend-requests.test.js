@@ -28,54 +28,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
 const express_1 = __importDefault(require("express"));
-const posts_1 = __importDefault(require("../../routes/posts"));
+const friend_requests_1 = __importDefault(require("../../routes/friend-requests"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config({ path: `.env.test` });
 const app = (0, express_1.default)();
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use('/posts', posts_1.default);
-test("user posts works", done => {
+app.use('/friend-requests', friend_requests_1.default);
+const testUserId = "ff89861a-552a-496c-9a30-efc3eb79d300";
+test("get all friend requests that involve user", done => {
     (0, supertest_1.default)(app)
-        .get('/posts/ff89861a-552a-496c-9a30-efc3eb79d300')
+        .get(`/friend-requests/${testUserId}`)
         .expect("Content-Type", /json/)
         .expect(200, done);
 });
-test("user timeline posts works", done => {
+test("get all friend requests that user sent", done => {
     (0, supertest_1.default)(app)
-        .get('/posts/ff89861a-552a-496c-9a30-efc3eb79d300/timeline')
+        .get(`/friend-requests/sent/${testUserId}`)
         .expect("Content-Type", /json/)
         .expect(200, done);
 });
-test("returns error for unknown user", done => {
+test("get all friend requests that user recieved", done => {
     (0, supertest_1.default)(app)
-        .get('/posts/123')
-        .expect(400, done);
+        .get(`/friend-requests/recieved/${testUserId}`)
+        .expect("Content-Type", /json/)
+        .expect(200, done);
 });
-test("attempt to delete post that does not exist is blocked", done => {
+test("friend requests between users does not exist", done => {
     (0, supertest_1.default)(app)
-        .delete('/posts/1234')
-        .expect(400, done);
-});
-test("post with invalid input field is rejected", done => {
-    (0, supertest_1.default)(app)
-        .post('/posts/ff89861a-552a-496c-9a30-efc3eb79d300')
-        .type("form")
-        .send({ randomField: 1234 })
-        .expect(400, done);
-});
-test("post with no text is rejected", done => {
-    (0, supertest_1.default)(app)
-        .post('/posts/ff89861a-552a-496c-9a30-efc3eb79d300')
-        .type("form")
-        .send({ Text: "" })
-        .expect(400, done);
-});
-test("updates post successfully", done => {
-    (0, supertest_1.default)(app)
-        .put('/posts/3dd26bf6-267b-48be-9fe7-236f6e775295')
-        .type("form")
-        .send({ Text: "UPDATED IN TEST" })
+        .get(`/friend-requests/${testUserId}/1234`)
+        .expect("Content-Type", /json/)
+        .expect({ exists: false })
         .expect(200, done);
 });

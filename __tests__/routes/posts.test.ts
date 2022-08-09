@@ -1,6 +1,9 @@
 import request from 'supertest';
 import express from 'express'
 import PostsRouter from '../../routes/posts';
+import * as dotenv from 'dotenv';
+
+dotenv.config({path: `.env.test`})
 
 const app = express()
 app.use(express.urlencoded({ extended: false }));
@@ -52,3 +55,10 @@ test("post with no text is rejected", done => {
         .expect(400, done)
 });
 
+test("updates post successfully", done => {
+    request(app)
+        .put('/posts/3dd26bf6-267b-48be-9fe7-236f6e775295')
+        .type("form")
+        .send({Text: "UPDATED IN TEST"})
+        .expect(200, done)
+});
