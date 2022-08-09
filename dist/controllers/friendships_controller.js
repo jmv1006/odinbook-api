@@ -73,33 +73,53 @@ const delete_friends = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.delete_friends = delete_friends;
 const get_suggested_friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //get suggested friends: how?
     const adjancency_list = {};
     //for each of user friends, create a graph node
     const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
     //filters out Ids of friends and into an array
     const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
+    const amountOfFriends = friendsIds.length;
+    let number = 1;
     adjancency_list[req.params.UserId] = [];
-    //actions for every friend of user
-    friendsIds.forEach(populateGraph);
-    function populateGraph(id) {
+    console.log('friends: ' + friendsIds);
+    for (const x in friendsIds) {
+        populateGraph(friendsIds[x], verifyDone);
+    }
+    function verifyDone() {
+        if (number === amountOfFriends) {
+            bfs(req.params.UserId);
+        }
+        else {
+            number++;
+        }
+    }
+    function populateGraph(id, cb) {
         return __awaiter(this, void 0, void 0, function* () {
+            //creating node in graph for friend
             adjancency_list[id] = [];
-            //populate their value array with user id
+            //populate friend's value array with user id
             adjancency_list[id].push(req.params.UserId);
-            //populate user's array with friend ids
+            //populate user's array with friend's id
             adjancency_list[req.params.UserId].push(id);
             //get friends of friends
             const friendsOfFriend = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: id }, { User2: id }], NOT: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } } });
+            //ids of friends of friend
             const filteredIds = friendsOfFriend.map(friendship => friendship.User1 === id ? friendship.User2 : friendship.User1);
             function addFriendsOfFriendToGraph(friendId) {
-                adjancency_list[friendId] = [];
-                adjancency_list[friendId].push(id);
+                if (!(friendId in adjancency_list)) {
+                    adjancency_list[friendId] = [];
+                }
+                const existsMutual = adjancency_list[friendId].some((id) => id === id);
+                if (!existsMutual) {
+                    adjancency_list[friendId].push(id);
+                }
                 adjancency_list[id].push(friendId);
             }
             //create node for filteredIds and populate them
-            yield filteredIds.forEach(addFriendsOfFriendToGraph);
-            bfs(req.params.UserId);
+            for (const x in filteredIds) {
+                yield addFriendsOfFriendToGraph(filteredIds[x]);
+            }
+            cb();
         });
     }
     function bfs(node) {
