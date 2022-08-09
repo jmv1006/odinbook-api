@@ -80,19 +80,57 @@ const get_suggested_friends = (req, res) => __awaiter(void 0, void 0, void 0, fu
     //filters out Ids of friends and into an array
     const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
     adjancency_list[req.params.UserId] = [];
-    friendsIds.forEach(id => {
-        adjancency_list[req.params.UserId].push(id);
-    });
-    friendsIds.forEach(id => {
-        adjancency_list[id] = [];
-        adjancency_list[id].push(req.params.UserId);
-        //add all this users friends
-        initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: id }, { User2: req.params.id }] } }).then(res => {
-            console.log(res);
+    //actions for every friend of user
+    friendsIds.forEach(populateGraph);
+    function populateGraph(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            adjancency_list[id] = [];
+            //populate their value array with user id
+            adjancency_list[id].push(req.params.UserId);
+            //populate user's array with friend ids
+            adjancency_list[req.params.UserId].push(id);
+            //get friends of friends
+            const friendsOfFriend = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: id }, { User2: id }], NOT: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } } });
+            const filteredIds = friendsOfFriend.map(friendship => friendship.User1 === id ? friendship.User2 : friendship.User1);
+            function addFriendsOfFriendToGraph(friendId) {
+                adjancency_list[friendId] = [];
+                adjancency_list[friendId].push(id);
+                adjancency_list[id].push(friendId);
+            }
+            //create node for filteredIds and populate them
+            yield filteredIds.forEach(addFriendsOfFriendToGraph);
+            bfs(req.params.UserId);
         });
-    });
-    //at this point, all of the users friends are in the graph
-    console.log(adjancency_list);
-    res.send("here");
+    }
+    function bfs(node) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const queue = [];
+            const result = [];
+            const visited = {};
+            visited[node] = node;
+            queue.push(node);
+            while (queue.length > 0) {
+                const current = queue.pop();
+                const currentIsFriend = adjancency_list[req.params.UserId].some((id) => id === current);
+                if (current != req.params.UserId && !currentIsFriend) {
+                    result.push(current);
+                }
+                for (const friend in adjancency_list[current]) {
+                    const id = adjancency_list[current][friend];
+                    if (!(id in visited)) {
+                        visited[id] = id;
+                        queue.push(id);
+                    }
+                }
+            }
+            createResponse(result);
+        });
+    }
+    function createResponse(result) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const suggestedUsers = yield initialize_client_1.default.users.findMany({ where: { Id: { in: result } }, select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } });
+            res.status(200).json({ users: suggestedUsers });
+        });
+    }
 });
 exports.get_suggested_friends = get_suggested_friends;

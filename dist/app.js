@@ -40,9 +40,9 @@ const passport_1 = __importDefault(require("passport"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const redis_config_1 = require("./config/redis/redis.config");
 const dotenv = __importStar(require("dotenv"));
-console.log(process.env.NODE_ENV);
 dotenv.config({ path: `.env.development` });
 const cors_1 = __importDefault(require("cors"));
+//import './seeds'
 //import FacebookStrategy from './config/passport/facebook';
 const local_1 = __importDefault(require("./config/passport/local"));
 const jwt_1 = __importDefault(require("./config/passport/jwt"));

@@ -9,6 +9,8 @@ dotenv.config({path: `.env.development`})
 
 import cors from 'cors';
 
+//import './seeds'
+
 //import FacebookStrategy from './config/passport/facebook';
 import LocalStrategy from './config/passport/local';
 import JWTStrategy from './config/passport/jwt';

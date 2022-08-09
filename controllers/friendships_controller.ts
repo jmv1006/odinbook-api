@@ -85,24 +85,67 @@ export const get_suggested_friends = async  (req: Request, res: Response) => {
 
     adjancency_list[req.params.UserId] = [];
 
-    friendsIds.forEach(id => {
-        adjancency_list[req.params.UserId].push(id)
-    })
+    //actions for every friend of user
+    friendsIds.forEach(populateGraph);
 
-    friendsIds.forEach(id => {
+    async function populateGraph(id: string) {
         adjancency_list[id] = []
+
+        //populate their value array with user id
         adjancency_list[id].push(req.params.UserId)
 
-        //add all this users friends
-        prisma.friendships.findMany({where: {OR: [{User1: id}, {User2: req.params.id}]}}).then(res => {
-            console.log(res)
-        })
+        //populate user's array with friend ids
+        adjancency_list[req.params.UserId].push(id)
 
-    })
+        //get friends of friends
+        const friendsOfFriend = await prisma.friendships.findMany({where: {OR: [{User1: id}, {User2: id}], NOT: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}}});
 
-    //at this point, all of the users friends are in the graph
-    console.log(adjancency_list)
+        const filteredIds = friendsOfFriend.map(friendship => friendship.User1 === id ? friendship.User2 : friendship.User1);
 
-    res.send("here")
+
+        function addFriendsOfFriendToGraph(friendId: any) {
+            adjancency_list[friendId] = []
+            adjancency_list[friendId].push(id)
+            adjancency_list[id].push(friendId)
+        }
+
+        //create node for filteredIds and populate them
+        await filteredIds.forEach(addFriendsOfFriendToGraph)
+
+        bfs(req.params.UserId)
+    }
+
+    async function bfs(node: any) {
+        const queue = [];
+        const result:any = [];
+        const visited: any = {};
+
+        visited[node] = node;
+        queue.push(node);
+
+        while (queue.length > 0) {
+            const current: any = queue.pop();
+
+            const currentIsFriend = adjancency_list[req.params.UserId].some((id: any) => id === current)
+
+            if(current != req.params.UserId && !currentIsFriend) {
+                result.push(current)
+            }
+
+            for(const friend in adjancency_list[current]) {
+                const id: string = adjancency_list[current][friend]
+                if(!(id in visited)) {
+                    visited[id] = id;
+                    queue.push(id);
+                }
+            }
+        }
+        createResponse(result);
+    }
+
+    async function createResponse(result: Array<any>) {
+        const suggestedUsers = await prisma.users.findMany({where: {Id: {in: result}}, select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}});
+        res.status(200).json({users: suggestedUsers})
+    }
 };
 
