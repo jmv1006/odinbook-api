@@ -101,3 +101,4 @@ const get_pagninated_posts = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.get_pagninated_posts = get_pagninated_posts;
+//# sourceMappingURL=posts_controller.js.map

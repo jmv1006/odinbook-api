@@ -11,3 +11,4 @@ router.post('/:PostId/:UserId', check_user_exists_1.default, comments_controller
 router.get('/:PostId', comments_controller_1.get_post_comments);
 router.delete('/:CommentId', comments_controller_1.delete_comment);
 exports.default = router;
+//# sourceMappingURL=comments.js.map

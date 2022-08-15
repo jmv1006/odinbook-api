@@ -62,3 +62,4 @@ test("friend requests between users does not exist", done => {
         .expect({ exists: false })
         .expect(200, done);
 });
+//# sourceMappingURL=friend-requests.test.js.map

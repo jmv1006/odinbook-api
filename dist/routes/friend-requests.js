@@ -14,3 +14,4 @@ router.get('/:From_Id/:To_Id', friend_request_controller_1.check_request_exists)
 router.post('/:From_Id/:To_Id', friend_request_controller_1.create_request);
 router.delete('/:RequestId', friend_request_controller_1.delete_request);
 exports.default = router;
+//# sourceMappingURL=friend-requests.js.map

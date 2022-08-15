@@ -31,3 +31,4 @@ const strategy = new passport_jwt_1.Strategy(opts, (payload, done) => __awaiter(
     return done(null, user);
 }));
 exports.default = strategy;
+//# sourceMappingURL=jwt.js.map

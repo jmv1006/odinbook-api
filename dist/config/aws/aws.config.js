@@ -7,3 +7,4 @@ const s3 = new aws_sdk_1.S3({
     secretAccessKey: process.env.AWS_SECRET_KEY
 });
 exports.default = s3;
+//# sourceMappingURL=aws.config.js.map

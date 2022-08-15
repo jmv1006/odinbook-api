@@ -11,3 +11,4 @@ const check_post_exists_1 = __importDefault(require("../middleware/auth/check_po
 router.get('/post/:PostId', check_post_exists_1.default, likes_controller_1.get_post_likes);
 router.post('/post/:PostId/:UserId', check_user_exists_1.default, check_post_exists_1.default, likes_controller_1.toggle_post_like);
 exports.default = router;
+//# sourceMappingURL=likes.js.map

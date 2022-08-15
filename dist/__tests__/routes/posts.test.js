@@ -79,3 +79,4 @@ test("updates post successfully", done => {
         .send({ Text: "UPDATED IN TEST" })
         .expect(200, done);
 });
+//# sourceMappingURL=posts.test.js.map

@@ -43,3 +43,4 @@ const uploadPostImage = (0, multer_1.default)({
         }
     })
 });
+//# sourceMappingURL=multer-config.js.map

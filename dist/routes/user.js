@@ -21,3 +21,4 @@ router.post('/:UserId/profile-img', check_user_exists_1.default, multer_config_1
 router.put('/:UserId/profile-img', check_user_exists_1.default, deletingExistingProfileImg_1.default, multer_config_1.uploadProfileImage.single('image'), user_controller_1.handleProfileImg);
 router.delete('/:UserId/profile-img', deletingExistingProfileImg_1.default, user_controller_1.profileImgDelete);
 exports.default = router;
+//# sourceMappingURL=user.js.map

@@ -19,3 +19,4 @@ const allUsersCache = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     return res.status(200).json({ users: JSON.parse(users) });
 });
 exports.default = allUsersCache;
+//# sourceMappingURL=allUsersCache.js.map

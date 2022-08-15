@@ -44,3 +44,4 @@ test("token endpoint works", done => {
         .get('/')
         .expect(200, done);
 });
+//# sourceMappingURL=auth.test.js.map

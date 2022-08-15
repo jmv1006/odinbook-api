@@ -14,3 +14,4 @@ router.get('/:UserId/suggested', check_user_exists_1.default, friendships_contro
 router.post('/:User1Id/:User2Id', friendships_controller_1.create_friends);
 router.delete(`/:User1/:User2`, friendships_controller_1.delete_friends);
 exports.default = router;
+//# sourceMappingURL=friendships.js.map

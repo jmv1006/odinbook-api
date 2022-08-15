@@ -42,7 +42,7 @@ const redisConnect = async() => {
   await connectToRedis()
 }
 
-redisConnect()
+redisConnect();
 
 passport.use(LocalStrategy);
 passport.use(JWTStrategy);

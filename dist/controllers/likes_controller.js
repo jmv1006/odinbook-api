@@ -36,3 +36,4 @@ const toggle_post_like = (req, res) => __awaiter(void 0, void 0, void 0, functio
     return res.status(200).json({ message: "Successfully Created Like" });
 });
 exports.toggle_post_like = toggle_post_like;
+//# sourceMappingURL=likes_controller.js.map

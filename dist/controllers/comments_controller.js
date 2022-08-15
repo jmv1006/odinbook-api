@@ -56,3 +56,4 @@ const delete_comment = (req, res) => __awaiter(void 0, void 0, void 0, function*
     return res.status(200).json({ message: "Comment Successfully Deleted" });
 });
 exports.delete_comment = delete_comment;
+//# sourceMappingURL=comments_controller.js.map

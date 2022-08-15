@@ -111,3 +111,4 @@ const check_for_token = (req, res) => {
     }
 };
 exports.check_for_token = check_for_token;
+//# sourceMappingURL=auth_controller.js.map

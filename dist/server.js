@@ -39,3 +39,4 @@ const PORT = 7000 || process.env.PORT;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
+//# sourceMappingURL=server.js.map

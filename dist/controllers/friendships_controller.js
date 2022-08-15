@@ -74,17 +74,19 @@ const delete_friends = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.delete_friends = delete_friends;
 const get_suggested_friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const adjancency_list = {};
-    //for each of user friends, create a graph node
+    //find user friends
     const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
     //filters out Ids of friends and into an array
     const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
     const amountOfFriends = friendsIds.length;
     let number = 1;
+    //create a node in graph for user
     adjancency_list[req.params.UserId] = [];
-    console.log('friends: ' + friendsIds);
+    //for each of user's friends, create a graph node, then create a graph node for their friends
     for (const x in friendsIds) {
         populateGraph(friendsIds[x], verifyDone);
     }
+    //callback that verifies that graph nodes have been completed for all of user's friends and their friends as well
     function verifyDone() {
         if (number === amountOfFriends) {
             bfs(req.params.UserId);
@@ -105,6 +107,7 @@ const get_suggested_friends = (req, res) => __awaiter(void 0, void 0, void 0, fu
             const friendsOfFriend = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: id }, { User2: id }], NOT: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } } });
             //ids of friends of friend
             const filteredIds = friendsOfFriend.map(friendship => friendship.User1 === id ? friendship.User2 : friendship.User1);
+            //add friends of friend to graph
             function addFriendsOfFriendToGraph(friendId) {
                 if (!(friendId in adjancency_list)) {
                     adjancency_list[friendId] = [];
@@ -122,6 +125,7 @@ const get_suggested_friends = (req, res) => __awaiter(void 0, void 0, void 0, fu
             cb();
         });
     }
+    //breadth first search to find which friends(nodes) that user is not friends with
     function bfs(node) {
         return __awaiter(this, void 0, void 0, function* () {
             const queue = [];
@@ -143,6 +147,7 @@ const get_suggested_friends = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     }
                 }
             }
+            //sending results of bfs to create response function
             createResponse(result);
         });
     }
@@ -154,3 +159,4 @@ const get_suggested_friends = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.get_suggested_friends = get_suggested_friends;
+//# sourceMappingURL=friendships_controller.js.map

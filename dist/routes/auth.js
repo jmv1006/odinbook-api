@@ -13,3 +13,4 @@ router.get('/log-in/facebook', passport_1.default.authenticate('facebook', { ses
 router.get('/log-in/facebook/redirect', passport_1.default.authenticate('facebook', { session: false }), auth_controller_1.log_in_facebook_success);
 router.get('/token', passport_1.default.authenticate('jwt', { session: false }), auth_controller_1.check_for_token);
 exports.default = router;
+//# sourceMappingURL=auth.js.map

@@ -28,3 +28,4 @@ const deleteExistingProfileImg = (req, res, next) => __awaiter(void 0, void 0, v
     next();
 });
 exports.default = deleteExistingProfileImg;
+//# sourceMappingURL=deletingExistingProfileImg.js.map

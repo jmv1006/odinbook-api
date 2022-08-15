@@ -15,3 +15,4 @@ router.get('/:UserId/timeline/paginated/', check_user_exists_1.default, posts_co
 router.delete('/:PostId', check_post_exists_1.default, posts_controller_1.delete_post);
 router.put('/:PostId', check_post_exists_1.default, posts_controller_1.edit_post);
 exports.default = router;
+//# sourceMappingURL=posts.js.map

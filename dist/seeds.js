@@ -52,3 +52,4 @@ fakeUsers.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
     //createUser(user)
 }));
 console.log('done');
+//# sourceMappingURL=seeds.js.map

@@ -96,3 +96,4 @@ const update_profile_info = (req, res) => __awaiter(void 0, void 0, void 0, func
     return res.status(200).json({ updatedProfileInfo: updatedProfileInfo });
 });
 exports.update_profile_info = update_profile_info;
+//# sourceMappingURL=user_controller.js.map

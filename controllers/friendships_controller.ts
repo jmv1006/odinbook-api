@@ -1,4 +1,4 @@
-import e, {Request, Response} from 'express';
+import {Request, Response} from 'express';
 import { v4 } from 'uuid';
 import { getClient } from '../config/redis/redis.config';
 import prisma from '../config/prisma/initialize-client';
@@ -75,7 +75,7 @@ export const delete_friends = async (req: Request, res: Response) => {
 export const get_suggested_friends = async  (req: Request, res: Response) => {
     const adjancency_list: any = {};
 
-    //for each of user friends, create a graph node
+    //find user friends
     const friendships = await prisma.friendships.findMany({where: {OR: [{User1: req.params.UserId}, {User2: req.params.UserId}]}})
 
     //filters out Ids of friends and into an array
@@ -84,13 +84,15 @@ export const get_suggested_friends = async  (req: Request, res: Response) => {
     const amountOfFriends: number = friendsIds.length;
     let number = 1;
 
+    //create a node in graph for user
     adjancency_list[req.params.UserId] = [];
 
-    console.log('friends: ' + friendsIds)
+    //for each of user's friends, create a graph node, then create a graph node for their friends
     for(const x in friendsIds) {
         populateGraph(friendsIds[x], verifyDone);
     }
 
+    //callback that verifies that graph nodes have been completed for all of user's friends and their friends as well
     function verifyDone() {
         if(number === amountOfFriends) {
             bfs(req.params.UserId);
@@ -98,7 +100,6 @@ export const get_suggested_friends = async  (req: Request, res: Response) => {
             number++
         }
     }
-
 
     async function populateGraph(id: string, cb: any) {
         //creating node in graph for friend
@@ -116,12 +117,13 @@ export const get_suggested_friends = async  (req: Request, res: Response) => {
         //ids of friends of friend
         const filteredIds = friendsOfFriend.map(friendship => friendship.User1 === id ? friendship.User2 : friendship.User1);
 
+        //add friends of friend to graph
         function addFriendsOfFriendToGraph(friendId: any) {
             if(!(friendId in adjancency_list)) {
                 adjancency_list[friendId] = []
             }
 
-            const existsMutual = adjancency_list[friendId].some((id: any) => id === id)
+            const existsMutual = adjancency_list[friendId].some((id: any) => id === id);
 
             if(!existsMutual) {
                 adjancency_list[friendId].push(id)
@@ -138,9 +140,10 @@ export const get_suggested_friends = async  (req: Request, res: Response) => {
         cb();
     }
 
+    //breadth first search to find which friends(nodes) that user is not friends with
     async function bfs(node: any) {
         const queue = [];
-        const result:any = [];
+        const result: any = [];
         const visited: any = {};
 
         visited[node] = node;
@@ -149,7 +152,7 @@ export const get_suggested_friends = async  (req: Request, res: Response) => {
         while (queue.length > 0) {
             const current: any = queue.pop();
 
-            const currentIsFriend = adjancency_list[req.params.UserId].some((id: any) => id === current)
+            const currentIsFriend = adjancency_list[req.params.UserId].some((id: string) => id === current)
 
             if(current != req.params.UserId && !currentIsFriend) {
                 result.push(current)
@@ -163,6 +166,7 @@ export const get_suggested_friends = async  (req: Request, res: Response) => {
                 }
             }
         }
+        //sending results of bfs to create response function
         createResponse(result);
     }
 

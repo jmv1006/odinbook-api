@@ -75,3 +75,4 @@ const get_all_user_requests = (req, res) => __awaiter(void 0, void 0, void 0, fu
     return res.status(200).json({ requests: requests });
 });
 exports.get_all_user_requests = get_all_user_requests;
+//# sourceMappingURL=friend-request-controller.js.map

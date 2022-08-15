@@ -19,3 +19,4 @@ const checkUserPostsCache = (req, res, next) => __awaiter(void 0, void 0, void 0
     return res.status(200).json({ posts: JSON.parse(posts) });
 });
 exports.default = checkUserPostsCache;
+//# sourceMappingURL=user-posts-cache.js.map

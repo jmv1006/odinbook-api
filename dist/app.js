@@ -81,3 +81,4 @@ app.use('/users', user_1.default);
 app.use('/friend-requests', passport_1.default.authenticate('jwt', { session: false }), friend_requests_1.default);
 app.use('/friendships', friendships_1.default);
 exports.default = app;
+//# sourceMappingURL=app.js.map

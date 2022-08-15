@@ -20,3 +20,4 @@ const checkPostExists = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     next();
 });
 exports.default = checkPostExists;
+//# sourceMappingURL=check_post_exists.js.map

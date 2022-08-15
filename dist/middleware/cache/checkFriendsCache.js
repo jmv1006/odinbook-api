@@ -20,3 +20,4 @@ const checkFriendsCache = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     return res.status(200).json({ friends: JSON.parse(friends) });
 });
 exports.default = checkFriendsCache;
+//# sourceMappingURL=checkFriendsCache.js.map

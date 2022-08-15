@@ -39,3 +39,4 @@ server_1.io.on('connection', (socket) => {
         server_1.io.sockets.in(userId).emit('notification', { type: type, entityId: entityId });
     }));
 });
+//# sourceMappingURL=socket-io-config.js.map

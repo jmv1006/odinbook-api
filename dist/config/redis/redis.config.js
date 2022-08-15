@@ -26,3 +26,4 @@ const getClient = () => {
     return client;
 };
 exports.getClient = getClient;
+//# sourceMappingURL=redis.config.js.map
