@@ -67,18 +67,27 @@ const delete_post = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.delete_post = delete_post;
 const edit_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const file = req.file;
     const schema = joi_1.default.object({
         Text: joi_1.default.string()
             .min(1)
             .max(5000)
             .required(),
+        deleteImage: joi_1.default.string()
+            .min(1)
+            .max(10)
+            .required()
     });
     const { error } = schema.validate(req.body, { abortEarly: false });
     if (error)
-        return res.status(400).json({ message: "Error Creating Post" });
+        return res.status(400).json({ message: "Error Editing Post" });
     try {
-        const updatedPost = yield initialize_client_1.default.posts.update({ where: { Id: req.params.PostId }, data: { Text: req.body.Text } });
-        const returnedPost = yield initialize_client_1.default.posts.findUnique({ where: { Id: updatedPost.Id }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } } });
+        let updatedPost;
+        if (file)
+            updatedPost = yield initialize_client_1.default.posts.update({ where: { Id: req.params.PostId }, data: { Text: req.body.Text, Image: file.location } });
+        else
+            updatedPost = yield initialize_client_1.default.posts.update({ where: { Id: req.params.PostId }, data: { Text: req.body.Text } });
+        const returnedPost = yield initialize_client_1.default.posts.findUnique({ where: { Id: updatedPost.Id }, select: { Id: true, Text: true, Date: true, Image: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } } });
         return res.status(200).json({ updatedPost: returnedPost });
     }
     catch (error) {

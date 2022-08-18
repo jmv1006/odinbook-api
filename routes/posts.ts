@@ -5,6 +5,7 @@ import checkPostExists from "../middleware/auth/check_post_exists";
 import checkUserExists from '../middleware/auth/check_user_exists';
 import {uploadPostImage} from '../config/multer/multer-config'
 import deletePostImg from '../middleware/aws/deletePostImg'
+import handlePostEdit from '../middleware/posts/handlePostEdit';
 
 router.post('/:UserId', checkUserExists, uploadPostImage.single('image'),  create_post);
 
@@ -16,7 +17,6 @@ router.get('/:UserId/timeline/paginated/', checkUserExists, get_pagninated_posts
 
 router.delete('/:PostId', checkPostExists, deletePostImg, delete_post);
 
-router.put('/:PostId', checkPostExists, edit_post);
-
+router.put('/:PostId', checkPostExists, uploadPostImage.single('image'), handlePostEdit, edit_post);
 
 export default router;

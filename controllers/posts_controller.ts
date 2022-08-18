@@ -62,20 +62,29 @@ export const delete_post = async (req: Request, res: Response) => {
 };
 
 export const edit_post = async (req: Request, res: Response) => {
+    const file: any = req.file;
+
     const schema = Joi.object({
         Text: Joi.string()
             .min(1)
             .max(5000)
             .required(),
+        deleteImage: Joi.string()
+            .min(1)
+            .max(10)
+            .required()
     });
 
     const { error } = schema.validate(req.body, {abortEarly: false})
 
-    if(error) return res.status(400).json({message: "Error Creating Post"});
+    if(error) return res.status(400).json({message: "Error Editing Post"});
 
     try {
-        const updatedPost = await prisma.posts.update({where: {Id: req.params.PostId}, data: {Text: req.body.Text}});
-        const returnedPost = await prisma.posts.findUnique({where: {Id: updatedPost.Id}, select: {Id: true, Text: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}}}});
+        let updatedPost;
+        if(file) updatedPost = await prisma.posts.update({where: {Id: req.params.PostId}, data: {Text: req.body.Text, Image: file.location}})
+        else updatedPost = await prisma.posts.update({where: {Id: req.params.PostId}, data: {Text: req.body.Text}});
+        
+        const returnedPost = await prisma.posts.findUnique({where: {Id: updatedPost.Id}, select: {Id: true, Text: true, Date: true, Image: true, Users: {select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}}}});
         return res.status(200).json({updatedPost: returnedPost});
     } catch(error: any) {
         return res.status(500).json({message: "Error Updating Post"})

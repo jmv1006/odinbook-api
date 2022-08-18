@@ -10,11 +10,13 @@ const check_post_exists_1 = __importDefault(require("../middleware/auth/check_po
 const check_user_exists_1 = __importDefault(require("../middleware/auth/check_user_exists"));
 const multer_config_1 = require("../config/multer/multer-config");
 const deletePostImg_1 = __importDefault(require("../middleware/aws/deletePostImg"));
+const handlePostEdit_1 = __importDefault(require("../middleware/posts/handlePostEdit"));
 router.post('/:UserId', check_user_exists_1.default, multer_config_1.uploadPostImage.single('image'), posts_controller_1.create_post);
 router.get('/:UserId', check_user_exists_1.default, posts_controller_1.get_user_posts);
 router.get('/:UserId/timeline', check_user_exists_1.default, posts_controller_1.get_timeline_posts);
 router.get('/:UserId/timeline/paginated/', check_user_exists_1.default, posts_controller_1.get_pagninated_posts);
 router.delete('/:PostId', check_post_exists_1.default, deletePostImg_1.default, posts_controller_1.delete_post);
-router.put('/:PostId', check_post_exists_1.default, posts_controller_1.edit_post);
+//router.put('/:PostId', checkPostExists, edit_post);
+router.put('/:PostId', check_post_exists_1.default, multer_config_1.uploadPostImage.single('image'), handlePostEdit_1.default, posts_controller_1.edit_post);
 exports.default = router;
 //# sourceMappingURL=posts.js.map
