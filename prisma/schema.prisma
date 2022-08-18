@@ -9,7 +9,7 @@ datasource db {
 
 model Comments {
   Id    String    @id @db.VarChar(255)
-  Text  String?   @db.VarChar(500)
+  Text  String?   @db.VarChar(1000)
   User  String?   @db.VarChar(255)
   Post  String?   @db.VarChar(255)
   Date  DateTime? @db.DateTime(0)
@@ -44,9 +44,10 @@ model Post_Likes {
 
 model Posts {
   Id         String       @id @db.VarChar(255)
-  Text       String?      @db.VarChar(500)
+  Text       String?      @db.VarChar(5000)
   UserId     String?      @db.VarChar(255)
   Date       DateTime?    @db.DateTime(0)
+  Image      String?      @db.VarChar(255)
   Users      Users?       @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Post_UserId")
   Comments   Comments[]
   Post_Likes Post_Likes[]

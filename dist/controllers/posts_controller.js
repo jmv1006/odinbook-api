@@ -24,29 +24,32 @@ const get_all_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.get_all_posts = get_all_posts;
 const get_user_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const posts = yield initialize_client_1.default.posts.findMany({ where: { UserId: req.params.UserId }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
+    const posts = yield initialize_client_1.default.posts.findMany({ where: { UserId: req.params.UserId }, select: { Id: true, Text: true, Image: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
     return res.status(200).json({ posts: posts });
 });
 exports.get_user_posts = get_user_posts;
 const create_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const file = req.file;
     const schema = joi_1.default.object({
         Text: joi_1.default.string()
             .min(1)
             .max(5000)
-            .required(),
+            .required()
     });
     const { error } = schema.validate(req.body, { abortEarly: false });
     if (error)
         return res.status(400).json("Error Creating Post");
-    yield initialize_client_1.default.posts.create({
+    const newPost = yield initialize_client_1.default.posts.create({
         data: {
             Id: (0, uuid_1.v4)(),
             UserId: req.params.UserId,
             Text: req.body.Text,
-            Date: new Date()
+            Date: new Date(),
+            Image: file ? file.location : null
         }
     });
-    return res.status(200).json({ message: "Successfully Created Post" });
+    const returnedPost = yield initialize_client_1.default.posts.findUnique({ where: { Id: newPost.Id }, select: { Id: true, Text: true, Image: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } } });
+    return res.status(200).json({ createdPost: returnedPost });
 });
 exports.create_post = create_post;
 const get_timeline_posts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -54,13 +57,13 @@ const get_timeline_posts = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
     //filters out Ids of friends and into an array
     const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
-    const postsI = yield initialize_client_1.default.posts.findMany({ where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
+    const postsI = yield initialize_client_1.default.posts.findMany({ where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, select: { Id: true, Text: true, Date: true, Image: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
     res.status(200).json({ posts: postsI });
 });
 exports.get_timeline_posts = get_timeline_posts;
 const delete_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield initialize_client_1.default.posts.delete({ where: { Id: req.params.PostId } });
-    return res.status(200).json({ message: "Successfully Deleted Post" });
+    const deleted = yield initialize_client_1.default.posts.delete({ where: { Id: req.params.PostId } });
+    return res.status(200).json({ deletedPost: deleted });
 });
 exports.delete_post = delete_post;
 const edit_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -75,7 +78,8 @@ const edit_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.status(400).json({ message: "Error Creating Post" });
     try {
         const updatedPost = yield initialize_client_1.default.posts.update({ where: { Id: req.params.PostId }, data: { Text: req.body.Text } });
-        return res.status(200).json({ updatedPost: updatedPost });
+        const returnedPost = yield initialize_client_1.default.posts.findUnique({ where: { Id: updatedPost.Id }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } } });
+        return res.status(200).json({ updatedPost: returnedPost });
     }
     catch (error) {
         return res.status(500).json({ message: "Error Updating Post" });
@@ -93,8 +97,8 @@ const get_pagninated_posts = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: req.params.UserId }, { User2: req.params.UserId }] } });
         //filters out Ids of friends and into an array
         const friendsIds = friendships.map(friendship => friendship.User1 === req.params.UserId ? friendship.User2 : friendship.User1);
-        const posts = yield initialize_client_1.default.posts.findMany({ take: limit, skip: endIndex, where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, select: { Id: true, Text: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
-        res.status(200).json({ posts: posts });
+        const posts = yield initialize_client_1.default.posts.findMany({ take: limit, skip: endIndex, where: { OR: [{ UserId: req.params.UserId }, { UserId: { in: friendsIds } }] }, select: { Id: true, Text: true, Image: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } }, orderBy: { Date: 'desc' } });
+        res.status(200).json({ posts: posts, total: posts.length });
     }
     catch (error) {
         return res.status(500).json({ message: "Server Error" });

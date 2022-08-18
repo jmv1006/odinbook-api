@@ -51,10 +51,10 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/auth', authRoute);
-app.use('/posts', passport.authenticate('jwt', {session: false}), postsRoute);
+app.use('/posts', postsRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likesRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}), commentsRoute);
-app.use('/users', passport.authenticate('jwt', {session: false}), userRoute);
+app.use('/users', userRoute);
 app.use('/friend-requests', passport.authenticate('jwt', {session: false}), friendRequestsRoute);
 app.use('/friendships', passport.authenticate('jwt', {session: false}), friendshipsRoute);
 

@@ -50,11 +50,11 @@ app.get('/', (req, res) => {
     res.json({ message: "Hello From API!" });
 });
 app.use('/auth', auth_1.default);
-app.use('/posts', passport_1.default.authenticate('jwt', { session: false }), posts_1.default);
+app.use('/posts', posts_1.default);
 app.use('/likes', passport_1.default.authenticate('jwt', { session: false }), likes_1.default);
 app.use('/comments', passport_1.default.authenticate('jwt', { session: false }), comments_1.default);
 app.use('/users', user_1.default);
 app.use('/friend-requests', passport_1.default.authenticate('jwt', { session: false }), friend_requests_1.default);
-app.use('/friendships', friendships_1.default);
+app.use('/friendships', passport_1.default.authenticate('jwt', { session: false }), friendships_1.default);
 exports.default = app;
 //# sourceMappingURL=app.js.map

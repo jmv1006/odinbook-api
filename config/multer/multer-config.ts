@@ -26,7 +26,7 @@ const uploadProfileImage = multer({
 const uploadPostImage = multer({
     fileFilter(req: Request, file: any, done) {
         const ext = path.extname(file.originalname);
-        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg' && ext !== '.JPG') {
             return done(null, false)
         }
         done(null, file)
@@ -36,9 +36,10 @@ const uploadPostImage = multer({
         bucket: 'odinbook-jmv1006',
         key: function (req: Request, file, done) {
             const ext: string = path.extname(file.originalname);
-            done(null, 'postImg' + ext);
+            const sanitized = file.originalname.replace(/\s/g, '');
+            done(null, sanitized);
         }
     })
 });
 
-export {uploadProfileImage};
+export {uploadProfileImage, uploadPostImage};
