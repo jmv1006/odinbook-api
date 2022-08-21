@@ -43,14 +43,15 @@ model Post_Likes {
 }
 
 model Posts {
-  Id         String       @id @db.VarChar(255)
-  Text       String?      @db.VarChar(5000)
-  UserId     String?      @db.VarChar(255)
-  Date       DateTime?    @db.DateTime(0)
-  Image      String?      @db.VarChar(255)
-  Users      Users?       @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Post_UserId")
-  Comments   Comments[]
-  Post_Likes Post_Likes[]
+  Id            String          @id @db.VarChar(255)
+  Text          String?         @db.VarChar(5000)
+  UserId        String?         @db.VarChar(255)
+  Date          DateTime?       @db.DateTime(0)
+  Image         String?         @db.VarChar(255)
+  Users         Users?          @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Post_UserId")
+  Comments      Comments[]
+  Notifications Notifications[]
+  Post_Likes    Post_Likes[]
 
   @@index([UserId], map: "FK_Post_UserId")
 }
@@ -64,6 +65,8 @@ model Users {
   Comments                                         Comments[]
   Friendships_Friendships_User1ToUsers             Friendships[]     @relation("Friendships_User1ToUsers")
   Friendships_Friendships_User2ToUsers             Friendships[]     @relation("Friendships_User2ToUsers")
+  Notifications_Notifications_From_UserToUsers     Notifications[]   @relation("Notifications_From_UserToUsers")
+  Notifications_Notifications_To_UserToUsers       Notifications[]   @relation("Notifications_To_UserToUsers")
   Post_Likes                                       Post_Likes[]
   Posts                                            Posts[]
   Profile_Info                                     Profile_Info[]
@@ -90,4 +93,19 @@ model Profile_Info {
   Users  Users?  @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "Profile_Info_ibfk_1")
 
   @@index([UserId], map: "UserId")
+}
+
+model Notifications {
+  Id                                   String  @id @db.VarChar(255)
+  From_User                            String? @db.VarChar(255)
+  To_User                              String? @db.VarChar(255)
+  Notification_Type                    String? @db.VarChar(100)
+  Post_Id                              String? @db.VarChar(255)
+  Users_Notifications_From_UserToUsers Users?  @relation("Notifications_From_UserToUsers", fields: [From_User], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "Notifications_ibfk_2")
+  Posts                                Posts?  @relation(fields: [Post_Id], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "Notifications_ibfk_1")
+  Users_Notifications_To_UserToUsers   Users?  @relation("Notifications_To_UserToUsers", fields: [To_User], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "Notifications_ibfk_3")
+
+  @@index([From_User], map: "From_User")
+  @@index([Post_Id], map: "Post_Id")
+  @@index([To_User], map: "To_User")
 }

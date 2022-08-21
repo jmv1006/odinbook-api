@@ -24,7 +24,21 @@ const toggle_post_like = (req, res) => __awaiter(void 0, void 0, void 0, functio
     const postIsLiked = yield initialize_client_1.default.post_Likes.findFirst({ where: { User: req.params.UserId, Post: req.params.PostId } });
     if (postIsLiked) {
         yield initialize_client_1.default.post_Likes.deleteMany({ where: { User: req.params.UserId, Post: req.params.PostId } });
+        yield initialize_client_1.default.notifications.deleteMany({ where: { From_User: req.params.UserId } });
         return res.status(200).json({ message: "Successfully Removed Like" });
+    }
+    const postToBeLiked = yield initialize_client_1.default.posts.findUnique({ where: { Id: req.params.PostId } });
+    if ((postToBeLiked === null || postToBeLiked === void 0 ? void 0 : postToBeLiked.UserId) !== req.params.UserId) {
+        //create a notification
+        yield initialize_client_1.default.notifications.create({
+            data: {
+                Id: (0, uuid_1.v4)(),
+                From_User: req.params.UserId,
+                To_User: postToBeLiked === null || postToBeLiked === void 0 ? void 0 : postToBeLiked.UserId,
+                Notification_Type: 'like',
+                Post_Id: postToBeLiked === null || postToBeLiked === void 0 ? void 0 : postToBeLiked.Id
+            }
+        });
     }
     yield initialize_client_1.default.post_Likes.create({
         data: {

@@ -25,7 +25,6 @@ server_1.io.on('connection', (socket) => {
             return console.log('Same User');
         //io.to(user).emit("event", event)
     });
-    //TO-DO: When a user creates a post, the news feed of their friends page should reflect it...
     socket.on('post', (userId) => __awaiter(void 0, void 0, void 0, function* () {
         //Alert all amigos
         const friendships = yield initialize_client_1.default.friendships.findMany({ where: { OR: [{ User1: userId }, { User2: userId }] } });
@@ -34,9 +33,11 @@ server_1.io.on('connection', (socket) => {
             server_1.io.sockets.in(room).emit('new-post');
         });
     }));
-    socket.on('notification', (userId, type, entityId) => __awaiter(void 0, void 0, void 0, function* () {
+    socket.on('notification', (targetUser, fromUser) => {
+        if (targetUser === fromUser)
+            return;
         //when a notification is triggered, send it to the target User Id with the type
-        server_1.io.sockets.in(userId).emit('notification', { type: type, entityId: entityId });
-    }));
+        server_1.io.sockets.in(targetUser).emit('notification');
+    });
 });
 //# sourceMappingURL=socket-io-config.js.map

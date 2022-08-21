@@ -76,7 +76,7 @@ test("updates post successfully", done => {
     (0, supertest_1.default)(app)
         .put('/posts/3dd26bf6-267b-48be-9fe7-236f6e775295')
         .type("form")
-        .send({ Text: "UPDATED IN TEST" })
+        .send({ Text: "UPDATED IN TEST", deleteImage: "false" })
         .expect(200, done);
 });
 //# sourceMappingURL=posts.test.js.map

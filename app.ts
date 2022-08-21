@@ -9,7 +9,6 @@ import cors from 'cors';
 
 //import './seeds'
 
-//import FacebookStrategy from './config/passport/facebook';
 import LocalStrategy from './config/passport/local';
 import JWTStrategy from './config/passport/jwt';
 
@@ -18,6 +17,7 @@ import postsRoute from './routes/posts';
 import likesRoute from './routes/likes';
 import commentsRoute from './routes/comments';
 import userRoute from './routes/user';
+import notificationsRoute from './routes/notifications';
 import friendRequestsRoute from './routes/friend-requests';
 import friendshipsRoute from './routes/friendships';
 
@@ -54,9 +54,10 @@ app.use('/auth', authRoute);
 app.use('/posts', passport.authenticate('jwt', {session: false}), postsRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likesRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}), commentsRoute);
-app.use('/users', passport.authenticate('jwt', {session: false}), userRoute);
+app.use('/users', userRoute);
 app.use('/friend-requests', passport.authenticate('jwt', {session: false}), friendRequestsRoute);
 app.use('/friendships', passport.authenticate('jwt', {session: false}), friendshipsRoute);
+app.use('/notifications', notificationsRoute);
 
 
 export default app;

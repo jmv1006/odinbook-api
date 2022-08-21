@@ -16,7 +16,6 @@ const initialize_client_1 = __importDefault(require("../../config/prisma/initial
 const aws_config_1 = __importDefault(require("../../config/aws/aws.config"));
 const handlePostEdit = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //if user wants to delete post image, delete it
-    console.log(req.body);
     if (req.body.deleteImage === 'true') {
         //delete image and its location in db
         const imgUrl = yield initialize_client_1.default.posts.findFirst({ where: { Id: req.params.PostId } });

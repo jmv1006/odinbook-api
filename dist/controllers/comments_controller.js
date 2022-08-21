@@ -29,6 +29,17 @@ const create_comment = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const postExists = yield initialize_client_1.default.posts.findUnique({ where: { Id: req.params.PostId } });
     if (!postExists)
         return res.status(400).json({ message: "Post Does Not Exist" });
+    if (postExists.UserId !== req.params.UserId) {
+        yield initialize_client_1.default.notifications.create({
+            data: {
+                Id: (0, uuid_1.v4)(),
+                From_User: req.params.UserId,
+                To_User: postExists === null || postExists === void 0 ? void 0 : postExists.UserId,
+                Notification_Type: 'comment',
+                Post_Id: postExists === null || postExists === void 0 ? void 0 : postExists.Id
+            }
+        });
+    }
     yield initialize_client_1.default.comments.create({
         data: {
             Id: (0, uuid_1.v4)(),

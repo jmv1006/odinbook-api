@@ -9,13 +9,10 @@ io.on('connection', (socket) => {
         socket.join(user);
     });
 
-
     socket.on('event', (event, userId) => {
         if(user === userId) return console.log('Same User')
         //io.to(user).emit("event", event)
     })
-
-    //TO-DO: When a user creates a post, the news feed of their friends page should reflect it...
 
     socket.on('post', async (userId: string) => {
         //Alert all amigos
@@ -27,9 +24,9 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('notification', async (userId: string, type: string, entityId: string) => {
-
+    socket.on('notification', (targetUser, fromUser) => {
+        if(targetUser === fromUser) return
         //when a notification is triggered, send it to the target User Id with the type
-        io.sockets.in(userId).emit('notification', {type: type, entityId: entityId})
+        io.sockets.in(targetUser).emit('notification')
     });
 });

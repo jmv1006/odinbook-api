@@ -18,6 +18,18 @@ export const create_comment = async (req: Request, res: Response) => {
     const postExists = await prisma.posts.findUnique({where: {Id: req.params.PostId}})
     if(!postExists) return res.status(400).json({message: "Post Does Not Exist"})
 
+    if(postExists.UserId !== req.params.UserId) {
+        await prisma.notifications.create({
+            data: {
+                Id: v4(),
+                From_User: req.params.UserId,
+                To_User: postExists?.UserId,
+                Notification_Type: 'comment',
+                Post_Id: postExists?.Id
+            }
+        });
+    }
+
     await prisma.comments.create({
         data: {
             Id: v4(),
