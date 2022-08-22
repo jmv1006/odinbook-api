@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { create_post, get_timeline_posts, get_user_posts, get_pagninated_posts, delete_post, edit_post } from '../controllers/posts_controller';
+import { create_post, get_timeline_posts, get_user_posts, get_pagninated_posts, delete_post, edit_post, get_specific_post } from '../controllers/posts_controller';
 import checkPostExists from "../middleware/auth/check_post_exists";
 import checkUserExists from '../middleware/auth/check_user_exists';
 import {uploadPostImage} from '../config/multer/multer-config'
@@ -9,7 +9,9 @@ import handlePostEdit from '../middleware/posts/handlePostEdit';
 
 router.post('/:UserId', checkUserExists, uploadPostImage.single('image'),  create_post);
 
-router.get('/:UserId', checkUserExists, get_user_posts);
+router.get('/:PostId', checkPostExists, get_specific_post);
+
+router.get('/user/:UserId', checkUserExists, get_user_posts);
 
 router.get('/:UserId/timeline', checkUserExists, get_timeline_posts);
 

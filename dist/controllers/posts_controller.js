@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_pagninated_posts = exports.edit_post = exports.delete_post = exports.get_timeline_posts = exports.create_post = exports.get_user_posts = exports.get_all_posts = void 0;
+exports.get_pagninated_posts = exports.edit_post = exports.delete_post = exports.get_timeline_posts = exports.create_post = exports.get_specific_post = exports.get_user_posts = exports.get_all_posts = void 0;
 const joi_1 = __importDefault(require("joi"));
 const uuid_1 = require("uuid");
 const initialize_client_1 = __importDefault(require("../config/prisma/initialize-client"));
@@ -28,6 +28,11 @@ const get_user_posts = (req, res) => __awaiter(void 0, void 0, void 0, function*
     return res.status(200).json({ posts: posts });
 });
 exports.get_user_posts = get_user_posts;
+const get_specific_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const post = yield initialize_client_1.default.posts.findUnique({ where: { Id: req.params.PostId }, select: { Id: true, Text: true, Image: true, Date: true, Users: { select: { Id: true, DisplayName: true, Email: true, ProfileImg: true } } } });
+    return res.status(200).json({ post: post });
+});
+exports.get_specific_post = get_specific_post;
 const create_post = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const file = req.file;
     const schema = joi_1.default.object({

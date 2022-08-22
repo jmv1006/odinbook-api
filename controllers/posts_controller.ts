@@ -14,6 +14,11 @@ export const get_user_posts = async (req: Request, res: Response) => {
     return res.status(200).json({posts: posts})
 };
 
+export const get_specific_post = async (req: Request, res: Response) => {
+    const post = await prisma.posts.findUnique({where: {Id: req.params.PostId}, select: {Id: true, Text: true, Image: true, Date: true, Users: {select: {Id: true, DisplayName: true, Email: true, ProfileImg: true}}}});
+    return res.status(200).json({post: post})
+};
+
 export const create_post = async (req: Request, res: Response) => {
     const file: any = req.file
 
