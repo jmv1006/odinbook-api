@@ -36,7 +36,29 @@ export const log_in = (req: Request, res: Response) => {
         });
 
     })(req, res)
-}
+};
+
+
+export const log_in_guest = async (req: Request, res: Response) => {
+    const user: any = await prisma.users.findFirst({where:{Id: 'ff89861a-552a-496c-9a30-efc3eb79d300'}})
+    
+    const tokenUser: any = {
+        Id: user.Id,
+        DisplayName: user.DisplayName,
+        Email: user.Email,
+        ProfileImg: user.ProfileImg
+    }
+    
+    const tokenSecret: any = process.env.TOKEN_SECRET;
+    
+    const token = sign({user: tokenUser}, tokenSecret, {expiresIn: '15m'})
+
+    return res.status(200).cookie('token', token, {httpOnly: true, sameSite: 'strict', secure: true}).json({
+        message: 'Auth Passed',
+        user: tokenUser,
+    });
+
+};
 
 export const sign_up = async (req: Request, res: Response) => {
     const schema = Joi.object({

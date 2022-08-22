@@ -1,12 +1,15 @@
 import express from "express";
 import passport from "passport";
-import { log_in, sign_up, check_for_token, log_in_facebook_success } from '../controllers/auth_controller';
+import { log_in, sign_up, check_for_token, log_in_facebook_success, log_in_guest } from '../controllers/auth_controller';
 
 const router = express.Router();
+
 
 router.post('/log-in',log_in);
 
 router.post('/sign-up', sign_up);
+
+router.get('/log-in/guest', log_in_guest)
 
 router.get('/log-in/facebook', passport.authenticate('facebook', {session: false}));
 
