@@ -38,9 +38,15 @@ const uploadPostImage = (0, multer_1.default)({
         s3: aws_config_1.default,
         bucket: 'odinbook-jmv1006',
         key: function (req, file, done) {
-            const ext = path_1.default.extname(file.originalname);
             const sanitized = file.originalname.replace(/\s/g, '');
-            done(null, sanitized);
+            if (req.params.UserId) {
+                const finalKey = req.params.UserId + sanitized;
+                return done(null, finalKey);
+            }
+            else if (req.params.PostId) {
+                const finalKey = req.params.PostId + sanitized;
+                return done(null, finalKey);
+            }
         }
     })
 });
