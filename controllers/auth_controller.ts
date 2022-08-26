@@ -30,7 +30,7 @@ export const log_in = (req: Request, res: Response) => {
         
         const token = sign({user: tokenUser}, tokenSecret, {expiresIn: '15m'})
     
-        return res.status(200).cookie('token', token, {httpOnly: true, sameSite: 'strict', secure: true}).json({
+        return res.status(200).clearCookie('token').cookie('token', token, {httpOnly: true, sameSite: 'strict', secure: true}).json({
             message: 'Auth Passed',
             user: tokenUser,
         });
@@ -53,7 +53,7 @@ export const log_in_guest = async (req: Request, res: Response) => {
     
     const token = sign({user: tokenUser}, tokenSecret, {expiresIn: '15m'})
 
-    return res.status(200).cookie('token', token, {httpOnly: true, sameSite: 'strict', secure: true}).json({
+    return res.status(200).clearCookie('token').cookie('token', token, {httpOnly: true, sameSite: 'strict', secure: true}).json({
         message: 'Auth Passed',
         user: tokenUser,
     });

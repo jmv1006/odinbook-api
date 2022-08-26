@@ -37,7 +37,7 @@ const log_in = (req, res) => {
         };
         const tokenSecret = process.env.TOKEN_SECRET;
         const token = (0, jsonwebtoken_1.sign)({ user: tokenUser }, tokenSecret, { expiresIn: '15m' });
-        return res.status(200).cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: true }).json({
+        return res.status(200).clearCookie('token').cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: true }).json({
             message: 'Auth Passed',
             user: tokenUser,
         });
@@ -54,7 +54,7 @@ const log_in_guest = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     };
     const tokenSecret = process.env.TOKEN_SECRET;
     const token = (0, jsonwebtoken_1.sign)({ user: tokenUser }, tokenSecret, { expiresIn: '15m' });
-    return res.status(200).cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: true }).json({
+    return res.status(200).clearCookie('token').cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: true }).json({
         message: 'Auth Passed',
         user: tokenUser,
     });

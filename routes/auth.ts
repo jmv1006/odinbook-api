@@ -4,7 +4,6 @@ import { log_in, sign_up, check_for_token, log_in_facebook_success, log_in_guest
 
 const router = express.Router();
 
-
 router.post('/log-in',log_in);
 
 router.post('/sign-up', sign_up);
